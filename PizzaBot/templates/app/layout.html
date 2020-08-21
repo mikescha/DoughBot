@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }} - DoughBot</title>
+    
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'app/content/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/content/site.css' %}" />
+
+</head>
+
+<body>
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="/"><strong>Doughbot</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pizza' %}">Pizza<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'bread' %}">Bread</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pie' %}">Pie</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container flex-shrink-0 mt-3">
+        {% block content %}{% endblock %}
+        
+        <footer class="footer mt-auto py-3">
+            <div class="container">
+                <span class="text-muted">&copy; {{ year }} - DoughBot</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!--jQuery and Bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="{% static 'app/scripts/bootstrap.bundle.js' %}"></script>
+    
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>
