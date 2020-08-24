@@ -5,19 +5,42 @@ Definition of views.
 from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpRequest
+from django.http import JsonResponse
 
-def pizza(request):
-    """Renders the pizza page."""
+from .pizza import Pizza
+from .forms import PizzaForm
+
+#Render unto Caesar the Pizza Page!!
+def pizza_view(request):
     assert isinstance(request, HttpRequest)
-    return render(
-        request,
-        'app/index.html',
-        {
-            'title':'PizzaBot',
-            'message':'The PizzaBot helps you make the correct amount of pizza dough every time!',
-            'year':datetime.now().year,
-        }
-    )
+
+    if request.method == "POST":
+        # Get the form contents 
+        form = PizzaForm(request.POST)
+
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            message = form.cleaned_data["pizza_type"]
+            
+            # If we are POSTing, then return the response to the JQuery code so it can draw it on the page without refresh
+            #serialized_data = json.dumps(the_data)
+            return JsonResponse({"pizza_type" : message}, status=200)
+        else:
+            #TODO Form is not valid for some reason, put in error handling
+            assert False
+    
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = PizzaForm()
+
+        return render(request, "app/pizza.html",
+            {
+                "title":"PizzaBot",
+                "message":"The PizzaBot helps you make the correct amount of pizza dough every time!",
+                "form":form,
+                "year":datetime.now().year,
+            }
+        )
 
 def bread(request):
     assert isinstance(request, HttpRequest)

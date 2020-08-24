@@ -33,6 +33,9 @@
   <ItemGroup>
     <Compile Include="PizzaBot\forms.py" />
     <Compile Include="PizzaBot\models.py" />
+    <Compile Include="PizzaBot\pizza.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PizzaBot\tests.py" />
     <Compile Include="PizzaBot\views.py" />
     <Compile Include="PizzaBot\__init__.py" />
@@ -71,6 +74,8 @@
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.min.js.map" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.js.map" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.min.js.map" />
+    <Content Include="PizzaBot\static\app\scripts\pizza.js" />
+    <Content Include="PizzaBot\templates\app\pizza.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="PizzaBot\static\app\fonts\glyphicons-halflings-regular.eot" />

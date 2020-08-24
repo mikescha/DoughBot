@@ -5,6 +5,16 @@ Definition of forms.
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
+from PizzaBot.pizza import Pizza
+
+class PizzaForm(forms.Form):
+    
+    pizza_type = forms.ChoiceField(
+        label = "Pizza Type",
+        choices = Pizza.PIZZA_TYPE_CHOICES,
+        initial= Pizza.initial,
+        )
+
 
 class BootstrapAuthenticationForm(AuthenticationForm):
     """Authentication form which uses boostrap CSS."""
