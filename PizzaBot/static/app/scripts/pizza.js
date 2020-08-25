@@ -95,33 +95,11 @@ $(function () {
     const scale = (s, uBig, uSmall) => {
         var n = "";
         if (parseFloat(s) >= 1000) {
-            n = (parseFloat(s) / 1000) + uBig;
+            n = (parseFloat(s) / 1000) + " " + uBig;
         } else {
-            n = s + uSmall;
+            n = s + " " +uSmall;
         }
         return n;
-    };
-
-    function listIngredients(ingredients) {
-        var list = "";
-        var item = "";
-
-        Object.keys(ingredients).forEach(ingredient => {
-            //skip any ingredient with 0 amount
-            if (ingredients[ingredient] != "0") {
-                //format will be "value" "unit" "ingredient name". Assume that all liquid ingredients are ml, everything
-                //else is in g for now
-                if (ingredient == "water" || ingredient == "oil") {
-                    item = scale(ingredients[ingredient], "l", "ml")
-                } else {
-                    item = scale(ingredients[ingredient], "kg", "g");
-                }
-                item += " " + capitalize(ingredient) + "<br>";
-                list += item;
-            };
-        });
-
-        return list;
     };
 
     function showRecipe(response) {
@@ -139,10 +117,9 @@ $(function () {
         //Delete the old rows
         table.innerHTML = "";
 
+        //Add the ingredients, one per row. Remember that we have to go backwards because...javascript.
         //Make an array of the keys in reverse order
         var reverse_ingredients = Object.keys(ingredients).reverse();
-
-        //Add the new rows. Remember that we have to go backwards
         reverse_ingredients.forEach(ingredient => {
             //skip any ingredient with 0 amount
             if (ingredients[ingredient] != "0") {
@@ -150,11 +127,13 @@ $(function () {
 
                 cell = row.insertCell(0);
                 cell.innerHTML = capitalize(ingredient);
+                cell.classList.add("ingredient-cell")
+                cell.classList.add("w-75")
 
                 cell = row.insertCell(0);
-                cell.style.textAlign = "right";
-                //format will be "value" "unit" "ingredient name". Assume that all liquid ingredients are ml, everything
-                //else is in g for now
+                cell.classList.add("amount-cell")
+                cell.classList.add("w-25")
+                //Assume that all liquid ingredients are ml, everything else is in g for now
                 if (ingredient == "water" || ingredient == "oil") {
                     cell.innerHTML = scale(ingredients[ingredient], "l", "ml")
                 } else {
@@ -162,16 +141,14 @@ $(function () {
                 }
             };
         });
-
+     
         row = table.insertRow(0);
         cell = row.insertCell(0);
+        cell.classList.add("heading-cell");
         cell.colSpan = 2;
-        cell.innerHTML = "Makes " + pizza["dough_balls"] + " balls";
+        cell.innerHTML = "<h4>" + pizza["style_name"] + "</h4>" +
+            "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " balls</i></small></p>";
 
-        var row = table.insertRow(0);
-        var cell = row.insertCell(0);
-        cell.colSpan = 2;
-        cell.innerHTML = "<b>" + pizza["style_name"] + "</b>";
     };
 
     function calcError(response) {

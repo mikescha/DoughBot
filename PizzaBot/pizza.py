@@ -24,18 +24,18 @@ dd_pizza_recipe = {
     "sugar" : 2.0,
     "oil"   : 15.0}
 
-NEOPOLITAN = "NE"
+NEAPOLITAN = "NE"
 NEWYORK = "NY"
 DEEPDISH = "DD"
 
 pizza_descriptions = [
-        (NEOPOLITAN, "Neopolitan thin crust"),
+        (NEAPOLITAN, "Neapolitan thin crust"),
         (NEWYORK, "New York thin crust"),
         (DEEPDISH, "Chicago-style deep dish"),
     ]
 
 pizza_recipes = {
-        NEOPOLITAN : neo_pizza_recipe,
+        NEAPOLITAN : neo_pizza_recipe,
         NEWYORK : ny_pizza_recipe,
         DEEPDISH : dd_pizza_recipe,
     }
@@ -43,7 +43,7 @@ pizza_recipes = {
 class Pizza(object):
     PIZZA_STYLE_CHOICES = pizza_descriptions
 
-    initial_style = NEOPOLITAN
+    initial_style = NEAPOLITAN
     inital_doughballs = 2
 
     def __init__(self, pizza_style, ball_count):
