@@ -6,6 +6,7 @@ from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpRequest
 from django.http import JsonResponse
+import json
 
 from .pizza import Pizza
 from .forms import PizzaForm
@@ -20,11 +21,14 @@ def pizza_view(request):
 
         if form.is_valid():
             # process the data in form.cleaned_data as required
-            message = form.cleaned_data["pizza_type"]
-            
+            style = form.cleaned_data["pizza_style"]
+            dough_balls = form.cleaned_data["dough_balls"]
+
+            the_pizza = Pizza(style, dough_balls)
+
             # If we are POSTing, then return the response to the JQuery code so it can draw it on the page without refresh
-            #serialized_data = json.dumps(the_data)
-            return JsonResponse({"pizza_type" : message}, status=200)
+            serialized_data = json.dumps(the_pizza.__dict__)
+            return JsonResponse(serialized_data, status=200, safe=False)
         else:
             #TODO Form is not valid for some reason, put in error handling
             assert False

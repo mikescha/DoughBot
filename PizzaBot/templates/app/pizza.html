@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <div class="jumbotron">
+    <div class="jumbotron-fluid">
         <div class="container">
             <h1 class="display-4">{{ title }}</h1>
             <p class="lead">{{ message }}</p>
@@ -11,15 +11,19 @@
 
 
     <main class="container">
+        <br />
+    
         <form action="/" method="post" id="pizza-form">
                 {% csrf_token %}
                 {{ form }}
         </form>
 
-        <div id="the_recipe">
-            <h1>Recipe goes here</h1>
-        </div>
+        <br />
+
+        <table id="recipe_table"></table>
+
     </main>
+
 
 
 {% endblock %}

@@ -9,11 +9,17 @@ from PizzaBot.pizza import Pizza
 
 class PizzaForm(forms.Form):
     
-    pizza_type = forms.ChoiceField(
-        label = "Pizza Type",
-        choices = Pizza.PIZZA_TYPE_CHOICES,
-        initial= Pizza.initial,
+    pizza_style = forms.ChoiceField(
+        label = "Pizza Style",
+        choices = Pizza.PIZZA_STYLE_CHOICES,
+        initial= Pizza.initial_style,
         )
+
+    dough_balls = forms.IntegerField(
+        label = "Number of Dough Balls",
+        initial = Pizza.inital_doughballs
+        )
+
 
 
 class BootstrapAuthenticationForm(AuthenticationForm):

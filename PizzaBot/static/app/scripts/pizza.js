@@ -64,42 +64,114 @@ $(function () {
         ajaxRecalcPizza();
     });
 
-    $("#pizza-form").submit(function (e) {
-        // preventing form page reload and default actions
-        e.preventDefault();
-        ajaxRecalcPizza();
-    });
-
     /*
      * Code for doing the AJAX magic.
      */
-
     function ajaxRecalcPizza() {
         console.log("About to make AJAX call");
+        console.log("Pizza--" + document.getElementById('id_pizza_style').value);
+        console.log("Count--" + parseInt(document.getElementById('id_dough_balls').value));
         $.ajax({
             type: 'POST',
             url: '',
             data: {
-                pizza_type: document.getElementById('id_pizza_type').value,
+                pizza_style: document.getElementById('id_pizza_style').value,
+                dough_balls: parseInt(document.getElementById('id_dough_balls').value),
             },
             processData: true,
             success: showRecipe,
             error: calcError
         });
-    }
+    };
 
     /*
      * What to do if ajax call is successful
      */
+    const capitalize = (s) => {
+        if (typeof s !== 'string') return ''
+        return s.charAt(0).toUpperCase() + s.slice(1)
+    };
+
+    const scale = (s, uBig, uSmall) => {
+        var n = "";
+        if (parseFloat(s) >= 1000) {
+            n = (parseFloat(s) / 1000) + uBig;
+        } else {
+            n = s + uSmall;
+        }
+        return n;
+    };
+
+    function listIngredients(ingredients) {
+        var list = "";
+        var item = "";
+
+        Object.keys(ingredients).forEach(ingredient => {
+            //skip any ingredient with 0 amount
+            if (ingredients[ingredient] != "0") {
+                //format will be "value" "unit" "ingredient name". Assume that all liquid ingredients are ml, everything
+                //else is in g for now
+                if (ingredient == "water" || ingredient == "oil") {
+                    item = scale(ingredients[ingredient], "l", "ml")
+                } else {
+                    item = scale(ingredients[ingredient], "kg", "g");
+                }
+                item += " " + capitalize(ingredient) + "<br>";
+                list += item;
+            };
+        });
+
+        return list;
+    };
+
     function showRecipe(response) {
         console.log("Handling successful response");
-        var e = document.getElementById("id_pizza_type");
-        var pizza_type = e.options[e.selectedIndex].text;
 
-        var recipe_html = "";
-        recipe_html = "<h1>Your pizza is: " + pizza_type;
+        const pizza = JSON.parse(response);
+        const ingredients = pizza["ingredients"];
 
-        document.getElementById("the_recipe").innerHTML = recipe_html;
+        console.log(pizza["style_name"]);
+        console.log(pizza["dough_balls"] + " dough balls");
+        console.log(ingredients);
+
+        var table = document.getElementById("recipe_table");
+
+        //Delete the old rows
+        table.innerHTML = "";
+
+        //Make an array of the keys in reverse order
+        var reverse_ingredients = Object.keys(ingredients).reverse();
+
+        //Add the new rows. Remember that we have to go backwards
+        reverse_ingredients.forEach(ingredient => {
+            //skip any ingredient with 0 amount
+            if (ingredients[ingredient] != "0") {
+                row = table.insertRow(0);
+
+                cell = row.insertCell(0);
+                cell.innerHTML = capitalize(ingredient);
+
+                cell = row.insertCell(0);
+                cell.style.textAlign = "right";
+                //format will be "value" "unit" "ingredient name". Assume that all liquid ingredients are ml, everything
+                //else is in g for now
+                if (ingredient == "water" || ingredient == "oil") {
+                    cell.innerHTML = scale(ingredients[ingredient], "l", "ml")
+                } else {
+                    cell.innerHTML = scale(ingredients[ingredient], "kg", "g");
+                }
+            };
+        });
+
+        row = table.insertRow(0);
+        cell = row.insertCell(0);
+        cell.colSpan = 2;
+        cell.innerHTML = "Makes " + pizza["dough_balls"] + " balls";
+
+        var row = table.insertRow(0);
+        var cell = row.insertCell(0);
+        cell.colSpan = 2;
+        cell.innerHTML = "<b>" + pizza["style_name"] + "</b>";
     };
 
     function calcError(response) {
@@ -107,5 +179,11 @@ $(function () {
         alert(response["responseJSON"]["error"]);
     };
 
+    //this will run when the entire page has loaded, so it will cause the recipe to show 
+    //by default
+    ajaxRecalcPizza();
+
 });
+
+
 
