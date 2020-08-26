@@ -53,6 +53,7 @@
     <Folder Include="PizzaBot\static\app\" />
     <Folder Include="PizzaBot\static\app\content\" />
     <Folder Include="PizzaBot\static\app\fonts\" />
+    <Folder Include="PizzaBot\static\app\graphics\" />
     <Folder Include="PizzaBot\static\app\scripts\" />
     <Folder Include="PizzaBot\templates\" />
     <Folder Include="PizzaBot\templates\app\" />
@@ -68,6 +69,8 @@
     <Content Include="PizzaBot\static\app\content\bootstrap.min.css" />
     <Content Include="PizzaBot\static\app\content\bootstrap.min.css.map" />
     <Content Include="PizzaBot\static\app\content\site.css" />
+    <Content Include="PizzaBot\static\app\graphics\pizza.png" />
+    <Content Include="PizzaBot\static\app\graphics\pizzapic.jpg" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.js" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.js.map" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.min.js" />

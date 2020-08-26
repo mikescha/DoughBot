@@ -1,4 +1,5 @@
 """description of the pizza class"""
+import math
 
 neo_pizza_recipe = {
     "flour" : 100.0,
@@ -40,16 +41,24 @@ pizza_recipes = {
         DEEPDISH : dd_pizza_recipe,
     }
 
+def scale_circle(d1, d2):
+    area1 = math.pi * pow((d1/2), 2)    
+    area2 = math.pi * pow((d2/2), 2)
+
+    return area1/area2
+
 class Pizza(object):
     PIZZA_STYLE_CHOICES = pizza_descriptions
 
     initial_style = NEAPOLITAN
     inital_doughballs = 2
+    initial_size = 30 #cm
 
-    def __init__(self, pizza_style, ball_count):
+    def __init__(self, pizza_style, ball_count, size):
         self.style_choice = ""
         self.style_name = ""
         self.dough_balls = 0
+        self.size = size
         self.ingredients = {}
         for p in pizza_descriptions:
             if p[0] == pizza_style:
@@ -58,7 +67,7 @@ class Pizza(object):
                 self.dough_balls = ball_count
                 
                 for ingredient in pizza_recipes[pizza_style]:
-                    self.ingredients[ingredient] = pizza_recipes[pizza_style][ingredient] * ball_count
+                    self.ingredients[ingredient] = pizza_recipes[pizza_style][ingredient] * ball_count * scale_circle(size, self.initial_size)
                 
                 break
 

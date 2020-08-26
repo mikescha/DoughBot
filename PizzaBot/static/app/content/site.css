@@ -14,8 +14,13 @@ td.heading-cell {
     line-height: 12px;
 }
 
+.form {
+    background-color: #CBD8AC !important;
+    padding: 20px;
+}
+
 .footer {
-    height: 60px; /* Set the fixed height of the footer here */
+    height: 120px; /* Set the fixed height of the footer here */
     line-height: 60px; /* Vertically center the text there */
 }
 .jumbotron {
@@ -28,6 +33,7 @@ td.heading-cell {
     color: #f5fbef;
     padding: 1em;
 }
+
 
 .navbar {
     background-color: #442220;

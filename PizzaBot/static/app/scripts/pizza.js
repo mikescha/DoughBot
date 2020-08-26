@@ -77,6 +77,7 @@ $(function () {
             data: {
                 pizza_style: document.getElementById('id_pizza_style').value,
                 dough_balls: parseInt(document.getElementById('id_dough_balls').value),
+                size: parseInt(document.getElementById('id_size').value)
             },
             processData: true,
             success: showRecipe,
@@ -94,10 +95,12 @@ $(function () {
 
     const scale = (s, uBig, uSmall) => {
         var n = "";
-        if (parseFloat(s) >= 1000) {
-            n = (parseFloat(s) / 1000) + " " + uBig;
+        var num = parseFloat(s)
+        num = Math.round((num + Number.EPSILON) * 10) / 10
+        if (num >= 1000) {
+            n = (num / 1000) + " " + uBig;
         } else {
-            n = s + " " +uSmall;
+            n = num + " " +uSmall;
         }
         return n;
     };
@@ -147,7 +150,7 @@ $(function () {
         cell.classList.add("heading-cell");
         cell.colSpan = 2;
         cell.innerHTML = "<h4>" + pizza["style_name"] + "</h4>" +
-            "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " balls</i></small></p>";
+            "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " balls for " + pizza["size"] + "cm pizzas</i></small></p>";
 
     };
 

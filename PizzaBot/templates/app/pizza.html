@@ -1,23 +1,40 @@
 {% extends "app/layout.html" %}
+{% load i18n widget_tweaks %}
 
 {% block content %}
 
-    <div class="jumbotron-fluid">
-        <div class="container">
-            <h1 class="display-4">{{ title }}</h1>
-            <p class="lead">{{ message }}</p>
-       </div>
+    {% load static %}
+    <div class="container-fluid">
+        <div class="jumbotron-fluid">
+            <div class="row">
+                <div class="col-2">
+                    <img class="img-fluid" src="{% static "app/graphics/pizza.png" %}" width="100" height="100" alt="Pizza">
+                </div>
+                <div class="col-10">
+                    <h1 class="display-4">{{ title }}</h1>
+                    <p class="lead">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+
+        <form class="form" action="/" method="post" id="pizza-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group form-row">
+                <label class="col-form-label col-sm-3" for="id_{{ field.name }}">{{ field.label }}</label>
+                    <div class="col-sm-9">{{ field|attr:"class:form-control" }}
+                        {% if field.help_text %}
+                            <p class="form-text text-muted"><small>{{ field.help_text }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </form>
     </div>
 
 
     <main class="container">
-        <br />
-    
-        <form action="/" method="post" id="pizza-form">
-                {% csrf_token %}
-                {{ form }}
-        </form>
-
         <br />
         <div class="container">
             <div class="row">
