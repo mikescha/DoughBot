@@ -68,6 +68,8 @@
     <Content Include="PizzaBot\static\app\content\bootstrap.css.map" />
     <Content Include="PizzaBot\static\app\content\bootstrap.min.css" />
     <Content Include="PizzaBot\static\app\content\bootstrap.min.css.map" />
+    <Content Include="PizzaBot\static\app\scripts\cookies.js" />
+    <Content Include="PizzaBot\static\app\scripts\header.js" />
     <Content Include="PizzaBot\static\app\content\site.css" />
     <Content Include="PizzaBot\static\app\graphics\pizza.png" />
     <Content Include="PizzaBot\static\app\graphics\pizzapic.jpg" />

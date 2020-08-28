@@ -21,7 +21,7 @@ class PizzaForm(forms.Form):
         )
 
     size = forms.IntegerField(
-        label = "Diameter of Pizza (cm)",
+        label = "Diameter of Pizza",
         initial = Pizza.initial_size,
         )
 

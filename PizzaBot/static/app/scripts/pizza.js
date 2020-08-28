@@ -5,23 +5,7 @@ $(function () {
      * 
     */
 
-    // This function gets cookie with a given name
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
+    const csrftoken = Cookies.get('csrftoken');
 
     //The functions below will create a header with csrftoken
     function csrfSafeMethod(method) {
@@ -93,7 +77,7 @@ $(function () {
         return s.charAt(0).toUpperCase() + s.slice(1)
     };
 
-    const scale = (s, uBig, uSmall) => {
+    const scaleIngredient = (s, uBig, uSmall) => {
         var n = "";
         var num = parseFloat(s)
         num = Math.round((num + Number.EPSILON) * 10) / 10
@@ -101,6 +85,23 @@ $(function () {
             n = (num / 1000) + " " + uBig;
         } else {
             n = num + " " +uSmall;
+        }
+        return n;
+    };
+
+    const scaleDryIngredient = (amount) => {
+        uKilo = "kg";
+        uGram = "g";
+        uPound = "lb";
+        uOunce = "oz";
+
+        var n = "";
+        var num = parseFloat(amount)
+        num = Math.round((num + Number.EPSILON) * 10) / 10
+        if (num >= 1000) {
+            n = (num / 1000) + " <span data-standard=\"" + uPound + "\" data-metric=\"" + uKilo + "\"></span>";
+        } else {
+            n = num +          " <span data-standard=\"" + uOunce + "\" data-metric=\"" + uGram + "\"></span>";
         }
         return n;
     };
@@ -138,9 +139,9 @@ $(function () {
                 cell.classList.add("w-25")
                 //Assume that all liquid ingredients are ml, everything else is in g for now
                 if (ingredient == "water" || ingredient == "oil") {
-                    cell.innerHTML = scale(ingredients[ingredient], "l", "ml")
+                    cell.innerHTML = scaleIngredient(ingredients[ingredient], "l", "ml")
                 } else {
-                    cell.innerHTML = scale(ingredients[ingredient], "kg", "g");
+                    cell.innerHTML = scaleDryIngredient(ingredients[ingredient]);
                 }
             };
         });
@@ -152,6 +153,7 @@ $(function () {
         cell.innerHTML = "<h4>" + pizza["style_name"] + "</h4>" +
             "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " balls for " + pizza["size"] + "cm pizzas</i></small></p>";
 
+        updateDisplayedUnits();  //from header.js
     };
 
     function calcError(response) {
@@ -162,8 +164,4 @@ $(function () {
     //this will run when the entire page has loaded, so it will cause the recipe to show 
     //by default
     ajaxRecalcPizza();
-
 });
-
-
-
