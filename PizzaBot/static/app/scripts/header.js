@@ -16,7 +16,7 @@ function updateDisplayedUnits() {
     });
 };
 
-$(function global () {
+$(function () {
     /*
      * CODE FOR UNITS BUTTONS
      */

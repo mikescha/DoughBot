@@ -26,7 +26,8 @@ def pizza_view(request):
             size = form.cleaned_data["size"]
             the_pizza = Pizza(style, dough_balls, size)
 
-            # If we are POSTing, then return the response to the JQuery code so it can draw it on the page without refresh
+            # If we are POSTing, then return the response to the JQuery code so
+            # it can draw it on the page without refresh
             serialized_data = json.dumps(the_pizza.__dict__)
             return JsonResponse(serialized_data, status=200, safe=False)
         else:
