@@ -76,18 +76,6 @@ $(function () {
         if (typeof s !== 'string') return ''
         return s.charAt(0).toUpperCase() + s.slice(1)
     };
-
-    const scaleIngredient = (s, uBig, uSmall) => {
-        var n = "";
-        var num = parseFloat(s)
-        num = Math.round((num + Number.EPSILON) * 10) / 10
-        if (num >= 1000) {
-            n = (num / 1000) + " " + uBig;
-        } else {
-            n = num + " " +uSmall;
-        }
-        return n;
-    };
     
     // Take any number representing a dry ingredient, scale the number to 
     // the right level of units, and then return that string
@@ -120,7 +108,7 @@ $(function () {
 
         //add metric units 
         if (metric_amt >= 1000) {
-            result += (metric_amt / 1000) + " " + uKilo;
+            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uKilo;
         } else {
             result += metric_amt + " " + uGram;
         }
@@ -162,7 +150,7 @@ $(function () {
 
         //add metric amounts...I love the metric system
         if (metric_amt >= 1000) {
-            result += (metric_amt / 1000) + " " + uLiter;
+            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uLiter;
         } else {
             result += metric_amt + " " + uMl;
         }

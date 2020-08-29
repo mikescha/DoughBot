@@ -19,7 +19,6 @@
 
         <form class="form" action="/" method="post" id="pizza-form">
             {% csrf_token %}
-
             {% for field in form %}
                 <div class="form-group form-row">
                 <label class="col-form-label col-sm-3" for="id_{{ field.name }}">{{ field.label }}</label>

@@ -1,6 +1,5 @@
-var savedUnit = 'standard';
-
 function updateDisplayedUnits() {
+    var targetUnit = Cookies.get('site-units');
     $('[data-metric]').each(function () {
         var $this = $(this);
 
@@ -10,8 +9,8 @@ function updateDisplayedUnits() {
         }
 
         // If the shown text doesn't match the selected unit data value, change it.
-        if ($this.text !== $this.data(savedUnit)) {
-            $this.text($this.data(savedUnit));
+        if ($this.text !== $this.data(targetUnit)) {
+            $this.text($this.data(targetUnit));
         }
     });
 };
@@ -21,6 +20,7 @@ $(function () {
      * CODE FOR UNITS BUTTONS
      */
 
+    var savedUnit = 'standard';
     
     // if no cookie set to standard, else set value to cookie value
     if (Cookies.get('site-units') === undefined) {

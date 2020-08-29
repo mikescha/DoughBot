@@ -64,10 +64,11 @@ p [data-metric] {
     }
 
 
-
+/* only needed if we want the navbar fixed
 body {
     padding-top: 70px;
 }
+*/
 
 td.ingredient-cell {
     text-align: left;
