@@ -1,5 +1,17 @@
-function updateDisplayedUnits() {
-    var targetUnit = Cookies.get('site-units');
+function updateDisplayedUnits(oldUnit, selectedUnit) {
+    var targetUnit = "";
+
+    // if no cookie set to standard, else set value to cookie value
+    if (Cookies.get('site-units') === undefined) {
+        targetUnit = 'metric';
+    }
+    else {
+        targetUnit = Cookies.get('site-units');
+    };
+
+    console.log("OldUnit:" + oldUnit + ", SelectedUnit:" + selectedUnit + ", targetUnit:" + targetUnit);
+
+    // go through each item with the data-metric tag and make sure it's set appropriately.
     $('[data-metric]').each(function () {
         var $this = $(this);
 
@@ -13,6 +25,22 @@ function updateDisplayedUnits() {
             $this.text($this.data(targetUnit));
         }
     });
+
+    // update the diameter field as needed
+    if (oldUnit !== undefined) {
+        if (oldUnit != targetUnit) {
+            //Units have changed. Update the pizza diameter field appropriately.
+            var size = document.getElementById('id_size');
+            if (oldUnit == "metric") {
+                //convert to imperial
+                size.value = Math.round(parseFloat(size.value) / 2.54);                
+            } else {
+                //convert to metric
+                size.value = Math.round(parseFloat(size.value) * 2.54);
+            };
+
+        };
+    };
 };
 
 $(function () {
@@ -20,67 +48,37 @@ $(function () {
      * CODE FOR UNITS BUTTONS
      */
 
-    var savedUnit = 'standard';
+    var savedUnit = 'metric';
     
     // if no cookie set to standard, else set value to cookie value
     if (Cookies.get('site-units') === undefined) {
-        savedUnit = 'standard';
+        Cookies.set("site-units", savedUnit, { expires: 365, path: '/' });
     }
     else {
         savedUnit = Cookies.get('site-units');
     }
 
-    // setting the current unit on load just to have separate variable
-    var currentUnit = 'standard';
-    console.log('page load set currentUnit to ' + currentUnit);
-
     // change selector switch active state to match cookie
     $('.unitSwitch a[data-unit-type="' + savedUnit + '"]').addClass('unitSwitch-active');
 
-    // For all measurements with metric data values
-    $('[data-metric]').each(function () {
-        var $this = $(this);
-
-        // if the default data unit value is undefined, save the original text as the value
-        if ($this.data('standard') === undefined) {
-            $this.data('standard', $this.text());
-        }
-
-        // If the shown text doesn't match the selected unit data value, change it.
-        if ($this.text !== $this.data(savedUnit)) {
-            $this.text($this.data(savedUnit));
-        }
-    });
+    //Normally we would need to update all the fields at this point. However, the pizza values
+    //may not have been loaded, so this wouldn't do anything. The Pizza script will be responsible for this.
 
     $('.unitSwitch a').on("click", function (event) {
         event.preventDefault();
 
+        oldUnit = Cookies.get("site-units");
         // set the site-units cookie to the value of the clicked link's data-sitewide-units (and currentUnit var as well)
         selectedUnit = $(this).data('unit-type');
-        currentUnit = selectedUnit;
         Cookies.set("site-units", selectedUnit, { expires: 365, path: '/' });
-        console.log('switch changed currentUnit to ' + currentUnit);
+        console.log("switch units from " + oldUnit + " to " + selectedUnit);
 
         //remove active state from all buttons, add back to selected
         $('.unitSwitch a').removeClass('unitSwitch-active');
         $('.unitSwitch a[data-unit-type="' + selectedUnit + '"]').addClass('unitSwitch-active');
 
-        //TODO: why doesn't this work??????
-        //updateDisplayedUnits();
-        
-        // For all measurements with metric data values
-        $('[data-metric]').each(function () {
-            var $this = $(this);
-
-            // if the default data unit value is undefined, save the original text as the value
-            if ($this.data('standard') === undefined) {
-                $this.data('standard', $this.text());
-            }
-            // If the shown text doesn't match the selected unit data value, change it.
-            if ($this.text !== $this.data(selectedUnit)) {
-                $this.text($this.data(selectedUnit));
-            }
-        });
+        //toggle the unit display if needed
+        updateDisplayedUnits(oldUnit, selectedUnit);
     });
     
     // This is only for allowing somebody to click the unit in the form
