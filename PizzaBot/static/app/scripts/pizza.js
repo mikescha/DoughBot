@@ -1,3 +1,14 @@
+function updatePizzaonUnitChange(newUnit) {
+    var size = document.getElementById('id_size');
+    if (newUnit == "metric") {
+        //convert to metric
+        size.value = Math.round(parseFloat(size.value) * 2.54);
+    } else {
+        //convert to imperial
+        size.value = Math.round(parseFloat(size.value) / 2.54);
+    };
+}
+
 $(function () {
     /* 
      * 
@@ -216,6 +227,7 @@ $(function () {
         alert(response["responseJSON"]["error"]);
     };
 
+    
     //this will run when the entire page has loaded, so it will cause the recipe to show 
     //by default
     ajaxRecalcPizza();

@@ -19,17 +19,24 @@
 
         <form class="form" action="/" method="post" id="pizza-form">
             {% csrf_token %}
+
             {% for field in form %}
-                <div class="form-group form-row">
-                <label class="col-form-label col-sm-3" for="id_{{ field.name }}">{{ field.label }}</label>
-                    <div class="col-sm-9">{{ field|attr:"class:form-control" }}
-                        {% if field.help_text %}
-                            <p class="form-text text-muted"><small>{{ field.help_text }}</small></p>
-                        {% endif %}
+                {% if field.name == "size" %}
+                    <div class="input-group input-row">
+                        <label class="col-form-label col-sm-4 mb-2" for="id_{{ field.name }}">{{ field.label }} <span data-standard="(inches)" data-metric="(cm)"></span></label>                    
+                        <div class="col-sm-8 mb-2">{{ field|attr:"class:form-control" }}</div>
                     </div>
-                </div>
+                {% else %}
+                    <div class="input-group input-row">
+                        <label class="col-form-label col-sm-4 mb-2" for="id_{{ field.name }}">{{ field.label }}</label>                    
+                        <div class="col-sm-8 mb-2">{{ field|attr:"class:form-control" }}
+                            {% if field.help_text %}
+                                <p class="input-group-text text-muted"><small>{{ field.help_text }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             {% endfor %}
-            <p>Equipment measurements are shown in <strong data-standard="US/Imperial units" data-metric="Metric units">US/Imperial units</strong> <span data-standard="(lbs, oz, in)" data-metric="(kg, ml, cm)">(lbs, oz, ft)</span>
         </form>
     </div>
 

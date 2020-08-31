@@ -72,7 +72,6 @@
     <Content Include="PizzaBot\static\app\scripts\header.js" />
     <Content Include="PizzaBot\static\app\content\site.css" />
     <Content Include="PizzaBot\static\app\graphics\pizza.png" />
-    <Content Include="PizzaBot\static\app\graphics\pizzapic.jpg" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.js" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.js.map" />
     <Content Include="PizzaBot\static\app\scripts\bootstrap.bundle.min.js" />

@@ -30,13 +30,12 @@ function updateDisplayedUnits(oldUnit, selectedUnit) {
     if (oldUnit !== undefined) {
         if (oldUnit != targetUnit) {
             //Units have changed. Update the pizza diameter field appropriately.
-            var size = document.getElementById('id_size');
             if (oldUnit == "metric") {
                 //convert to imperial
-                size.value = Math.round(parseFloat(size.value) / 2.54);                
+                updatePizzaonUnitChange("standard");
             } else {
                 //convert to metric
-                size.value = Math.round(parseFloat(size.value) * 2.54);
+                updatePizzaonUnitChange("metric");
             };
 
         };
@@ -50,7 +49,7 @@ $(function () {
 
     var savedUnit = 'metric';
     
-    // if no cookie set to standard, else set value to cookie value
+    // if no cookie set to metric, else set value to cookie value
     if (Cookies.get('site-units') === undefined) {
         Cookies.set("site-units", savedUnit, { expires: 365, path: '/' });
     }

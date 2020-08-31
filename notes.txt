@@ -6,7 +6,10 @@ Feature ideas:
 
 4) Add buttons to let the user increase/decrease the numeric amounts instead of doing text input
 
-
+Bugs:
+1)  When the user last selected imperial, leaves the page, and then comes back, the default units are Imperial but the default pizza size is 30. So,
+    -- save the last values in the the cookies and then reinitialize everything at launch
+    -- on startup, clear the cookies and reset to metric
 
 
 Done:
@@ -22,6 +25,8 @@ Done:
 
 
 
+Taken out of pizza.html:
+  <p class="input-group-text text-muted"><small>Measurements are in <strong data-standard="US/Imperial units" data-metric="Metric units">US/Imperial units</strong> <span data-standard="(lbs, oz, in)" data-metric="(kg, ml, cm)">(lbs, oz, ft)</span></small></p>
 
 
 
