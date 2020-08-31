@@ -58,7 +58,7 @@ $(function () {
         //If the size is in inches, need to convert to metric
         var size = parseInt(document.getElementById('id_size').value);
         if (Cookies.get("site-units") == "standard") {
-            size = Math.round(size * 2.54);
+            size = Math.round(inchToCm(size));
         }
 
         $.ajax({
@@ -78,92 +78,6 @@ $(function () {
     /*
      * What to do if ajax call is successful
      */
-    const capitalize = (s) => {
-        if (typeof s !== 'string') return ''
-        return s.charAt(0).toUpperCase() + s.slice(1)
-    };
-    
-    // Take any number representing a dry ingredient, scale the number to 
-    // the right level of units, and then return that string
-    const scaleDryIngredient = (metric, imp) => {
-        const uKilo = "kg";
-        const uGram = "g";
-        const uPound = "lb";
-        const uOunce = "oz";
-        const uTbsp = "tablespoon";
-        const uTsp = "teaspoon";
-
-        //Get the amount of ingredient from the string, and round to the nearest 0.1 
-        var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10
-        var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10
-
-        var result = "<span data-standard=\""
-        //if more than 1 lb convert to lb + oz
-        if (imp_amt >= 16) {
-            const imp_amt_lb = Math.trunc(imp_amt / 16);
-            const imp_amt_oz = Math.round(((imp_amt / 16) - imp_amt_lb) * 16);
-            result += imp_amt_lb + " " + uPound;
-            if (imp_amt_oz > 0) {
-                result += " " + imp_amt_oz + " " + uOunce;
-            }
-        } else {
-            result += imp_amt + " " + uOunce
-        }
-
-        result += "\" data-metric=\"";
-
-        //add metric units 
-        if (metric_amt >= 1000) {
-            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uKilo;
-        } else {
-            result += metric_amt + " " + uGram;
-        }
-        result += "\"></span>";
-
-        return result;
-    };
-
-    // Take any number representing a wet ingredient in liquid units (ml or oz), scale the number to 
-    // the right level of units, and then return that string
-    const scaleWetIngredient = (metric, imp) => {
-        const uLiter = "L";
-        const uMl = "ml";
-        const uQuart = "quart";
-        const uPint = "pint";
-        const uOunce = "oz";
-        const uCup = "cup";
-        const uTbsp = "tablespoon";
-        const uTsp = "teaspoon";
-
-        //table of imperial liquid units to ml
-        const units = { "cup": 8, "ounce": 1, "tbsp": 2/4, "tsp": 2/12 }; //quarter cup is 2 oz and has 4 T and 12 t
-
-        //Get the amount of ingredient from the string, and round to the nearest 0.1 
-        var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10;
-        var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10;
-
-        var result = "<span data-standard=\"";
-
-        if (imp_amt >= units["cup"]) { //if more than a cup, do like 1.5 cups
-            var cups = Math.round(((imp_amt / units["cup"]) + Number.EPSILON) * 10) / 10;
-            result += cups + " " + uCup + ((cups > 1) ? "s" : "");
-        } else {  //less than 1 cup, so just do ounces for now
-            result += imp_amt + " " + uOunce;
-        };
-
-        result += "\" data-metric=\"";
-
-        //add metric amounts...I love the metric system
-        if (metric_amt >= 1000) {
-            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uLiter;
-        } else {
-            result += metric_amt + " " + uMl;
-        }
-        result += "\"></span>";
-
-        return result;
-    };
-
     function showRecipe(response) {
         console.log("Handling successful response");
 
@@ -184,38 +98,13 @@ $(function () {
             if (metric_ingredients[ingredient] != "0") {
                 row = table.insertRow(0);
 
-                cell = row.insertCell(0);
-                cell.innerHTML = capitalize(ingredient);
-                cell.classList.add("ingredient-cell")
-                cell.classList.add("w-75")
-
-                cell = row.insertCell(0);
-                cell.classList.add("amount-cell")
-                cell.classList.add("w-25")
-                //Assume that all liquid ingredients are ml, everything else is in g for now
-                if (ingredient == "water" || ingredient == "olive oil") {
-                    cell.innerHTML = scaleWetIngredient(metric_ingredients[ingredient], imp_ingredients[ingredient])
-                } else {
-                    cell.innerHTML = scaleDryIngredient(metric_ingredients[ingredient], imp_ingredients[ingredient]);
-                }
+                addIngredientCell(row, ingredient);
+                addAmountCell(row, ingredient, metric_ingredients[ingredient], imp_ingredients[ingredient]);
             };
         });
      
         row = table.insertRow(0);
-        cell = row.insertCell(0);
-        cell.classList.add("heading-cell");
-        cell.colSpan = 2;
-        var msg = "<h4>" + pizza["style_name"] + "</h4>";
-        msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
-        msg += (pizza["dough_balls"] == 1 ? " " : "s ");
-        msg += "for " + (pizza["dough_balls"] == 1 ? "a " : " ") + "<span data-standard=\"";
-        var stdSize = Math.round(pizza["size"] / 2.54);
-        var metSize = pizza["size"];
-        msg += stdSize + " in\" data-metric=\"" + metSize + "cm\"></span> pizza";
-        msg += (pizza["dough_balls"] == 1 ? " " : "s ");
-        msg == "</i ></small ></p > ";
-
-        cell.innerHTML = msg;
+        addHeadingCell(row, pizza);
 
         updateDisplayedUnits();  //from header.js
     };
@@ -225,7 +114,6 @@ $(function () {
         alert(response["responseJSON"]["error"]);
     };
 
-    
     //this will run when the entire page has loaded, so it will cause the recipe to show 
     //by default
     checkCookies();
@@ -233,14 +121,15 @@ $(function () {
 });
 
 
+// Gets the pizza size and converts it to a different unit
 function updatePizzaOnUnitChange(newUnit) {
     var size = document.getElementById('id_size');
     if (newUnit == "metric") {
         //convert to metric
-        size.value = Math.round(parseFloat(size.value) * 2.54);
+        size.value = Math.round(inchToCm(parseFloat(size.value)));
     } else {
         //convert to imperial
-        size.value = Math.round(parseFloat(size.value) / 2.54);
+        size.value = Math.round(cmToInch(parseFloat(size.value)));
     };
 };
 
@@ -272,4 +161,127 @@ function loadPizzaState() {
         // since the units are different, need to convert to whatever the current units are
         updatePizzaOnUnitChange(Cookies.get("site-units"));
     };   
+};
+
+// for making the recipe look pretty
+function capitalize(s) {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+};
+
+// Take any number representing a dry ingredient, scale the number to 
+// the right level of units, and then return that string
+function scaleDryIngredient(metric, imp) {
+    const uKilo = "kg";
+    const uGram = "g";
+    const uPound = "lb";
+    const uOunce = "oz";
+    const uTbsp = "tablespoon";
+    const uTsp = "teaspoon";
+
+    //Get the amount of ingredient from the string, and round to the nearest 0.1 
+    var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10
+    var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10
+
+    var result = "<span data-standard=\""
+    //if more than 1 lb convert to lb + oz
+    if (imp_amt >= 16) {
+        const imp_amt_lb = Math.trunc(imp_amt / 16);
+        const imp_amt_oz = Math.round(((imp_amt / 16) - imp_amt_lb) * 16);
+        result += imp_amt_lb + " " + uPound;
+        if (imp_amt_oz > 0) {
+            result += " " + imp_amt_oz + " " + uOunce;
+        }
+    } else {
+        result += imp_amt + " " + uOunce
+    }
+
+    result += "\" data-metric=\"";
+
+    //add metric units 
+    if (metric_amt >= 1000) {
+        result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uKilo;
+    } else {
+        result += metric_amt + " " + uGram;
+    }
+    result += "\"></span>";
+
+    return result;
+};
+
+// Take any number representing a wet ingredient in liquid units (ml or oz), scale the number to 
+// the right level of units, and then return that string
+function scaleWetIngredient(metric, imp) {
+    const uLiter = "L";
+    const uMl = "ml";
+    const uQuart = "quart";
+    const uPint = "pint";
+    const uOunce = "oz";
+    const uCup = "cup";
+    const uTbsp = "tablespoon";
+    const uTsp = "teaspoon";
+
+    //table of imperial liquid units to ml
+    const units = { "cup": 8, "ounce": 1, "tbsp": 2 / 4, "tsp": 2 / 12 }; //quarter cup is 2 oz and has 4 T and 12 t
+
+    //Get the amount of ingredient from the string, and round to the nearest 0.1 
+    var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10;
+    var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10;
+
+    var result = "<span data-standard=\"";
+
+    if (imp_amt >= units["cup"]) { //if more than a cup, do like 1.5 cups
+        var cups = Math.round(((imp_amt / units["cup"]) + Number.EPSILON) * 10) / 10;
+        result += cups + " " + uCup + ((cups > 1) ? "s" : "");
+    } else {  //less than 1 cup, so just do ounces for now
+        result += imp_amt + " " + uOunce;
+    };
+
+    result += "\" data-metric=\"";
+
+    //add metric amounts...I love the metric system
+    if (metric_amt >= 1000) {
+        result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uLiter;
+    } else {
+        result += metric_amt + " " + uMl;
+    }
+    result += "\"></span>";
+
+    return result;
+};
+
+function addIngredientCell(row, ingredient) {
+    cell = row.insertCell(0);
+    cell.innerHTML = capitalize(ingredient);
+    cell.classList.add("ingredient-cell")
+    cell.classList.add("w-75")
+};
+
+function addAmountCell(row, ingredient, metricAmt, impAmt) {
+    cell = row.insertCell(0);
+    cell.classList.add("amount-cell")
+    cell.classList.add("w-25")
+    //Assume that all liquid ingredients are ml, everything else is in g for now
+    if (ingredient == "water" || ingredient == "olive oil") {
+        cell.innerHTML = scaleWetIngredient(metricAmt, impAmt)
+    } else {
+        cell.innerHTML = scaleDryIngredient(metricAmt, impAmt);
+    }
+};
+
+function addHeadingCell(row, pizza) {
+    cell = row.insertCell(0);
+    cell.classList.add("heading-cell");
+    cell.colSpan = 2;
+    var msg = "<h4>" + pizza["style_name"] + "</h4>";
+    msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
+    msg += (pizza["dough_balls"] == 1 ? " " : "s ");
+    msg += "for " + (pizza["dough_balls"] == 1 ? "a " : " ") + "<span data-standard=\"";
+    var stdSize = Math.round(cmToInch(pizza["size"]));
+    var metSize = pizza["size"];
+    msg += stdSize + " in\" data-metric=\"" + metSize + "cm\"></span> pizza";
+    msg += (pizza["dough_balls"] == 1 ? " " : "s ");
+    msg == "</i ></small ></p > ";
+
+    cell.innerHTML = msg;
 };

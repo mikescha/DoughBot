@@ -1,3 +1,6 @@
+const inchToCm = value => value * 2.54;
+const cmToInch = value => value / 2.54;
+
 function updateDisplayedUnits(oldUnit, selectedUnit) {
     var targetUnit = "";
 
