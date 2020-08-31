@@ -1,19 +1,10 @@
 Feature ideas:
-1) When the user makes a change, save the settings in a cookie so the next time the page loads 
-   then all the data is there.
-
 3) Allow the user to choose the amount of pizza by calories per ball
 
 4) Add buttons to let the user increase/decrease the numeric amounts instead of doing text input
 
-Bugs:
-1)  When the user last selected imperial, leaves the page, and then comes back, the default units are Imperial but the default pizza size is 30. So,
-    -- save the last values in the the cookies and then reinitialize everything at launch
-    -- on startup, clear the cookies and reset to metric
+5) Move more standard functions into the header.js so they don't need to be rewritten for bread
 
-
-Done:
-2) Get the diameter list to adjust based on CM or IN
 
 
 
