@@ -208,7 +208,11 @@ $(function () {
         var msg = "<h4>" + pizza["style_name"] + "</h4>";
         msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
         msg += (pizza["dough_balls"] == 1 ? " " : "s ");
-        msg += "for " + pizza["size"] + "cm pizzas";
+        msg += "for " + (pizza["dough_balls"] == 1 ? "a " : " ") + "<span data-standard=\"";
+        var stdSize = Math.round(pizza["size"] / 2.54);
+        var metSize = pizza["size"];
+        msg += stdSize + " in\" data-metric=\"" + metSize + "cm\"></span> pizza";
+        msg += (pizza["dough_balls"] == 1 ? " " : "s ");
         msg == "</i ></small ></p > ";
 
         cell.innerHTML = msg;
