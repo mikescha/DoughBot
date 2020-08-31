@@ -1,4 +1,4 @@
-function updatePizzaonUnitChange(newUnit) {
+function updatePizzaOnUnitChange(newUnit) {
     var size = document.getElementById('id_size');
     if (newUnit == "metric") {
         //convert to metric

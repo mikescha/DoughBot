@@ -32,10 +32,10 @@ function updateDisplayedUnits(oldUnit, selectedUnit) {
             //Units have changed. Update the pizza diameter field appropriately.
             if (oldUnit == "metric") {
                 //convert to imperial
-                updatePizzaonUnitChange("standard");
+                updatePizzaOnUnitChange("standard");
             } else {
                 //convert to metric
-                updatePizzaonUnitChange("metric");
+                updatePizzaOnUnitChange("metric");
             };
 
         };
@@ -80,7 +80,7 @@ $(function () {
         updateDisplayedUnits(oldUnit, selectedUnit);
     });
     
-    // This is only for allowing somebody to click the unit in the form
+    // This is only for allowing somebody to click the unit in the form to change it from there.
     /*
     $('[data-metric]').on("click", function (event) {
         console.log('Current measurement is ' + currentUnit);
