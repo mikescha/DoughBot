@@ -1,14 +1,3 @@
-function updatePizzaOnUnitChange(newUnit) {
-    var size = document.getElementById('id_size');
-    if (newUnit == "metric") {
-        //convert to metric
-        size.value = Math.round(parseFloat(size.value) * 2.54);
-    } else {
-        //convert to imperial
-        size.value = Math.round(parseFloat(size.value) / 2.54);
-    };
-}
-
 $(function () {
     /* 
      * 
@@ -56,6 +45,7 @@ $(function () {
     // our form. This way, we can do all the posts via JQuery and handle all the responses in the same way.
     $("#pizza-form").change(function () {
         console.log('Something has changed');
+        savePizzaState();
         ajaxRecalcPizza();
     });
 
@@ -63,16 +53,21 @@ $(function () {
      * Code for doing the AJAX magic.
      */
     function ajaxRecalcPizza() {
-        console.log("About to make AJAX call");
-        console.log("Pizza--" + document.getElementById('id_pizza_style').value);
-        console.log("Count--" + parseInt(document.getElementById('id_dough_balls').value));
+        console.log("About to make AJAX call for pizza:" + document.getElementById('id_pizza_style').value);
+
+        //If the size is in inches, need to convert to metric
+        var size = parseInt(document.getElementById('id_size').value);
+        if (Cookies.get("site-units") == "standard") {
+            size = Math.round(size * 2.54);
+        }
+
         $.ajax({
             type: 'POST',
             url: '',
             data: {
                 pizza_style: document.getElementById('id_pizza_style').value,
-                dough_balls: parseInt(document.getElementById('id_dough_balls').value),
-                size: parseInt(document.getElementById('id_size').value)
+                dough_balls: document.getElementById('id_dough_balls').value,
+                size: size,
             },
             processData: true,
             success: showRecipe,
@@ -128,7 +123,6 @@ $(function () {
         return result;
     };
 
-
     // Take any number representing a wet ingredient in liquid units (ml or oz), scale the number to 
     // the right level of units, and then return that string
     const scaleWetIngredient = (metric, imp) => {
@@ -170,17 +164,12 @@ $(function () {
         return result;
     };
 
-
     function showRecipe(response) {
         console.log("Handling successful response");
 
         const pizza = JSON.parse(response);
         const metric_ingredients = pizza["metric_ingredients"];
         const imp_ingredients = pizza["imp_ingredients"];
-
-        console.log(pizza["style_name"]);
-        console.log(pizza["dough_balls"] + " dough balls");
-        console.log(metric_ingredients);
 
         var table = document.getElementById("recipe_table");
 
@@ -216,8 +205,13 @@ $(function () {
         cell = row.insertCell(0);
         cell.classList.add("heading-cell");
         cell.colSpan = 2;
-        cell.innerHTML = "<h4>" + pizza["style_name"] + "</h4>" +
-            "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " balls for " + pizza["size"] + "cm pizzas</i></small></p>";
+        var msg = "<h4>" + pizza["style_name"] + "</h4>";
+        msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
+        msg += (pizza["dough_balls"] == 1 ? " " : "s ");
+        msg += "for " + pizza["size"] + "cm pizzas";
+        msg == "</i ></small ></p > ";
+
+        cell.innerHTML = msg;
 
         updateDisplayedUnits();  //from header.js
     };
@@ -230,5 +224,48 @@ $(function () {
     
     //this will run when the entire page has loaded, so it will cause the recipe to show 
     //by default
+    checkCookies();
     ajaxRecalcPizza();
 });
+
+
+function updatePizzaOnUnitChange(newUnit) {
+    var size = document.getElementById('id_size');
+    if (newUnit == "metric") {
+        //convert to metric
+        size.value = Math.round(parseFloat(size.value) * 2.54);
+    } else {
+        //convert to imperial
+        size.value = Math.round(parseFloat(size.value) / 2.54);
+    };
+};
+
+//called on page load
+function checkCookies() {
+    console.log("Checking cookies...")
+    if (Cookies.get("pizza") != undefined) {
+        console.log("Updating cookies");
+        loadPizzaState();
+    }
+};
+
+function savePizzaState() {
+    console.log("Saving pizza state")
+    Cookies.set("pizza", document.getElementById('id_pizza_style').value);
+    Cookies.set("dough_balls", document.getElementById('id_dough_balls').value);
+    Cookies.set("size", document.getElementById('id_size').value);
+    Cookies.set("pizza-units", Cookies.get("site-units"));
+};
+
+function loadPizzaState() {
+    console.log("Loading pizza state")
+    document.getElementById('id_pizza_style').value = Cookies.get("pizza");
+    document.getElementById('id_dough_balls').value = Cookies.get("dough_balls");
+    document.getElementById('id_size').value = Cookies.get("size");
+
+    //if the units we saved and the current ones are the same, then the saved units are accurate
+    if (Cookies.get("site-units") != Cookies.get("pizza-units")) {
+        // since the units are different, need to convert to whatever the current units are
+        updatePizzaOnUnitChange(Cookies.get("site-units"));
+    };   
+};

@@ -78,37 +78,9 @@ $(function () {
 
         //toggle the unit display if needed
         updateDisplayedUnits(oldUnit, selectedUnit);
-    });
-    
-    // This is only for allowing somebody to click the unit in the form to change it from there.
-    /*
-    $('[data-metric]').on("click", function (event) {
-        console.log('Current measurement is ' + currentUnit);
 
-        if (currentUnit === 'standard') {
-            var selectedUnit = 'metric';
-            $('.unitSwitch a').removeClass('unitSwitch-active');
-            $('.unitSwitch a[data-unit-type="' + selectedUnit + '"]').addClass('unitSwitch-active');
-            currentUnit = selectedUnit;
-        }
-        else if (currentUnit === 'metric') {
-            var selectedUnit = 'standard';
-            $('.unitSwitch a').removeClass('unitSwitch-active');
-            $('.unitSwitch a[data-unit-type="' + selectedUnit + '"]').addClass('unitSwitch-active');
-            currentUnit = selectedUnit;
-        }
-        $('[data-metric]').each(function () {
-            var $this = $(this);
-
-            // if the default data unit value is undefined, save the original text as the value
-            if ($this.data('standard') === undefined) {
-                $this.data('standard', $this.text());
-            }
-            // If the shown text doesn't match the selected unit data value, change it.
-            if ($this.text !== $this.data(selectedUnit)) {
-                $this.text($this.data(selectedUnit));
-            }
-        });
+        savePizzaState();
     });
-    */
+
+
 });
