@@ -168,6 +168,14 @@ function capitalize(s) {
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
 };
+function addS(number) {
+    if (number == 1) {
+        return " ";
+    }
+    else {
+        return "s ";
+    };
+};
 
 // Take any number representing a dry ingredient, scale the number to 
 // the right level of units, and then return that string
@@ -274,14 +282,21 @@ function addHeadingCell(row, pizza) {
     cell.classList.add("heading-cell");
     cell.colSpan = 2;
     var msg = "<h4>" + pizza["style_name"] + "</h4>";
+
+    //Dough balls description
     msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
-    msg += (pizza["dough_balls"] == 1 ? " " : "s ");
+    msg += addS(pizza["dough_balls"]);
     msg += "for " + (pizza["dough_balls"] == 1 ? "a " : " ") + "<span data-standard=\"";
     var stdSize = Math.round(cmToInch(pizza["size"]));
     var metSize = pizza["size"];
     msg += stdSize + " in\" data-metric=\"" + metSize + "cm\"></span> pizza";
-    msg += (pizza["dough_balls"] == 1 ? " " : "s ");
-    msg == "</i ></small ></p > ";
+    msg += addS(pizza["dough_balls"]);
+    msg += "</br>";
+
+    //Servings and calories information
+    var servings = Math.round(pizza["servings"])
+    msg += "About " + servings + " serving" + addS(servings);
+    msg += "per ball, with " + Math.round(pizza["calories"]/servings) + " calories per serving</i></small ></p>";
 
     cell.innerHTML = msg;
 };

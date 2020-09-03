@@ -22,12 +22,12 @@
 
             {% for field in form %}
                 {% if field.name == "size" %}
-                    <div class="input-group input-row">
+                    <div class="form-row align-items-center input-group">
                         <label class="col-form-label col-sm-4 mb-2" for="id_{{ field.name }}">{{ field.label }} <span data-standard="(inches)" data-metric="(cm)"></span></label>                    
                         <div class="col-sm-8 mb-2">{{ field|attr:"class:form-control" }}</div>
                     </div>
                 {% else %}
-                    <div class="input-group input-row">
+                    <div class="form-row align-items-center input-group">
                         <label class="col-form-label col-sm-4 mb-2" for="id_{{ field.name }}">{{ field.label }}</label>                    
                         <div class="col-sm-8 mb-2">{{ field|attr:"class:form-control" }}
                             {% if field.help_text %}
