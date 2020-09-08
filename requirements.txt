@@ -1,1 +1,7 @@
-django >= 2.2.13, < 3.0
+asgiref==3.2.10
+Django==3.1.1
+django-widget-tweaks==1.4.8
+pip==20.1.1
+pytz==2020.1
+setuptools==47.1.0
+sqlparse==0.3.1
