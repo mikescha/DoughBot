@@ -41,8 +41,8 @@ $(function () {
      * Code for handling the form submission
      */
 
-    // This function prevents the default flow of operation when the user clicks the Submit button on
-    // our form. This way, we can do all the posts via JQuery and handle all the responses in the same way.
+    // This function fires when anything changes in the Pizza form. This way, we can do 
+    // all the posts via JQuery and handle all the responses in the same way.
     $("#pizza-form").change(function () {
         console.log('Something has changed');
         savePizzaState();
@@ -67,7 +67,7 @@ $(function () {
             data: {
                 pizza_style: document.getElementById('id_pizza_style').value,
                 dough_balls: document.getElementById('id_dough_balls').value,
-                size: size,
+                size: document.getElementById('id_size').value, //was: size 
             },
             processData: true,
             success: showRecipe,
@@ -122,28 +122,51 @@ $(function () {
 
 
 // Gets the pizza size and converts it to a different unit
-function updatePizzaOnUnitChange(newUnit) {
-    var size = document.getElementById('id_size');
-    if (newUnit == "metric") {
-        //convert to metric
-        size.value = Math.round(inchToCm(parseFloat(size.value)));
-    } else {
-        //convert to imperial
-        size.value = Math.round(cmToInch(parseFloat(size.value)));
+function updatePizzaSize() {
+    //get the size from the cookie
+    //rebuild the list to match the new size
+    var unit = Cookies.get("site-units");
+    var sizeList = document.getElementById('id_size');
+    var selected = sizeList.value;
+
+    //TODO: How can I share this list with the Python code?
+    const sizeChoices = {
+        "XS": 20,
+        "SM": 25,
+        "MD": 30,
+        "LG": 35,
+        "XL": 40,
     };
+    
+    //clear all existing elements, then add as appropriate, then reselect what was selected before
+    sizeList.innerHTML = "";
+    Object.keys(sizeChoices).forEach(size => {
+        var choice = document.createElement("option");
+        choice.value = size;
+        if (unit == STANDARD) {
+            choice.textContent = Math.round(cmToInch(sizeChoices[size]));
+        } else {
+            choice.textContent = sizeChoices[size];
+        }
+        sizeList.add(choice);
+    });
+    sizeList.value = selected;
 };
+
+current_version = "0.9.0";
 
 //called on page load
 function checkCookies() {
-    console.log("Checking cookies...")
-    if (Cookies.get("pizza") != undefined) {
+    console.log("Checking cookies...");
+    if ((Cookies.get("pizza") != undefined) && (Cookies.get("version") == current_version)) {
         console.log("Updating cookies");
         loadPizzaState();
     }
 };
 
 function savePizzaState() {
-    console.log("Saving pizza state")
+    console.log("Saving pizza state");
+    Cookies.set("version", current_version);
     Cookies.set("pizza", document.getElementById('id_pizza_style').value);
     Cookies.set("dough_balls", document.getElementById('id_dough_balls').value);
     Cookies.set("size", document.getElementById('id_size').value);
@@ -151,16 +174,15 @@ function savePizzaState() {
 };
 
 function loadPizzaState() {
-    console.log("Loading pizza state")
-    document.getElementById('id_pizza_style').value = Cookies.get("pizza");
-    document.getElementById('id_dough_balls').value = Cookies.get("dough_balls");
-    document.getElementById('id_size').value = Cookies.get("size");
+    console.log("Loading pizza state");
 
-    //if the units we saved and the current ones are the same, then the saved units are accurate
-    if (Cookies.get("site-units") != Cookies.get("pizza-units")) {
-        // since the units are different, need to convert to whatever the current units are
-        updatePizzaOnUnitChange(Cookies.get("site-units"));
-    };   
+    if (Cookies.get("version") == current_version) {
+        //TODO: Do some kind of sanity checking on the cookies, and if they are bad then delete all and start from scratch
+        document.getElementById('id_pizza_style').value = Cookies.get("pizza");
+        document.getElementById('id_dough_balls').value = Cookies.get("dough_balls");
+        document.getElementById('id_size').value = Cookies.get("size");
+        updatePizzaSize();
+    };
 };
 
 // for making the recipe look pretty
@@ -168,6 +190,7 @@ function capitalize(s) {
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
 };
+
 function addS(number) {
     if (number == 1) {
         return " ";

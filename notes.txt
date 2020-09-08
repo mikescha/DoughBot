@@ -1,9 +1,14 @@
 Feature ideas:
-3) Allow the user to choose the amount of pizza by calories per ball
+p1
+-- Add appropriate instructions for each recipe
+-- Add buttons to let the user increase/decrease the numeric amounts instead of doing text input?
+   OR, change the integer input fields into choices?
 
-4) Add buttons to let the user increase/decrease the numeric amounts instead of doing text input
+p2
+-- Allow the user to choose the amount of pizza by calories per ball
 
-5) Move more standard functions into the header.js so they don't need to be rewritten for bread
+Code cleanup:
+-- Move more standard functions into the header.js so they don't need to be rewritten for bread
 
 
 

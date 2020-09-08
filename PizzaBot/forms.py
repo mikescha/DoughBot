@@ -20,8 +20,9 @@ class PizzaForm(forms.Form):
         initial = Pizza.inital_doughballs,
         )
 
-    size = forms.IntegerField(
+    size = forms.ChoiceField(
         label = "Diameter of Pizza",
+        choices = Pizza.PIZZA_SIZE_CHOICES,
         initial = Pizza.initial_size,
         )
 

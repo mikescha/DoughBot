@@ -49,6 +49,28 @@ NEAPOLITAN = "NE"
 NEWYORK = "NY"
 DEEPDISH = "DD"
 
+XS = "XS"
+SM = "SM"
+MD = "MD"
+LG = "LG"
+XL = "XL"
+
+pizza_size_choices = [
+    (XS, "20"),
+    (SM, "25"),
+    (MD, "30"),
+    (LG, "35"),
+    (XL, "40")
+    ]
+
+pizza_sizes = {
+    XS : 20,
+    SM : 25,
+    MD : 30,
+    LG : 35,
+    XL : 40
+    }
+
 pizza_descriptions = [ #note this is an array because that's what the drop-down list wants
         (NEAPOLITAN, "Neapolitan thin crust"),
         (NEWYORK, "New York thin crust"),
@@ -68,10 +90,10 @@ def scale_circle(d1, d2):
 
 class Pizza(object):
     PIZZA_STYLE_CHOICES = pizza_descriptions
-
+    PIZZA_SIZE_CHOICES = pizza_size_choices 
     initial_style = NEAPOLITAN
     inital_doughballs = 2
-    initial_size = 30 #cm
+    initial_size = MD #cm
     calories_per_serving = 350
 
     def __init__(self, pizza_style, ball_count, size):
@@ -79,7 +101,7 @@ class Pizza(object):
         self.style_name = ""
         self.dough_balls = 0
         self.dough_grams_per_pizza = 275
-        self.size = size
+        self.size = pizza_sizes[size]
         self.metric_ingredients = {}
         self.imp_ingredients = {}
 
@@ -99,17 +121,17 @@ class Pizza(object):
 
                     self.metric_ingredients[ingredient] = (pizza_recipes[pizza_style][ingredient] 
                                                            * ball_count 
-                                                           * scale_circle(size, self.initial_size))
+                                                           * scale_circle(pizza_sizes[size], pizza_sizes[self.initial_size]))
 
-                    self.imp_ingredients[ingredient] =  (self.metric_ingredients[ingredient] * 
-                                                         unit_conversion)
+                    self.imp_ingredients[ingredient] =  (self.metric_ingredients[ingredient] 
+                                                         * unit_conversion)
                     
                 self.calories = 0                    
                 for ingredient in self.metric_ingredients:
                     if ingredient in calories_per_unit:
                         self.calories += calories_per_unit[ingredient] * self.metric_ingredients[ingredient] / ball_count
 
-                #initial size is for 1 person, so however we scale the dough ball is the number of servings
+                #calories_per_serving is what I think a reasonable amount of dough is for a single person
                 self.servings = self.calories / self.calories_per_serving
 
                 break

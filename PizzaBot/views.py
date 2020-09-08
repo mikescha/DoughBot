@@ -23,7 +23,7 @@ def pizza_view(request):
             # Get the data for the calculations from the POST request and process it.
             style = request.POST["pizza_style"];
             dough_balls = int(request.POST["dough_balls"]);
-            size = int(request.POST["size"]);
+            size = request.POST["size"];
             the_pizza = Pizza(style, dough_balls, size)
 
             # If we are POSTing, then return the response to the JQuery code so 
