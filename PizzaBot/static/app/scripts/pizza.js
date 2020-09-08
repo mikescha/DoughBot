@@ -1,5 +1,3 @@
-CURRENT_VERSION = "0.9.1";
-
 $(function () {
     /* 
      * 
@@ -59,7 +57,7 @@ $(function () {
 
         //If the size is in inches, need to convert to metric
         var size = parseInt(document.getElementById('id_size').value);
-        if (Cookies.get("site-units") == "standard") {
+        if (Cookies.get("site-units") == STANDARD) {
             size = Math.round(inchToCm(size));
         }
 
@@ -191,21 +189,6 @@ function loadPizzaState() {
         document.getElementById('id_dough_balls').value = Cookies.get("dough_balls");
         document.getElementById('id_size').value = Cookies.get("size");
         updatePizzaSize();
-    };
-};
-
-// for making the recipe look pretty
-function capitalize(s) {
-    if (typeof s !== 'string') return ''
-    return s.charAt(0).toUpperCase() + s.slice(1)
-};
-
-function addS(number) {
-    if (number == 1) {
-        return " ";
-    }
-    else {
-        return "s ";
     };
 };
 

@@ -4,7 +4,7 @@ p1
 -- Add buttons to let the user increase/decrease the numeric amounts instead of doing text input?
    OR, change the integer input fields into choices?
 -- Make units "prettier", e.g. don't do fractional grams for large numbers, convert small numbers into Tsp/Tbsp, etc.
--- Add volume approximations
+-- Add volume approximations for Imperial numbers
 
 p2
 -- Allow the user to choose the amount of pizza by calories per ball
@@ -26,7 +26,7 @@ Taken out of header.js
         console.log('Current measurement is ' + currentUnit);
 
         if (currentUnit === 'standard') {
-            var selectedUnit = 'metric';
+            var selectedUnit = 'metric'';
             $('.unitSwitch a').removeClass('unitSwitch-active');
             $('.unitSwitch a[data-unit-type="' + selectedUnit + '"]').addClass('unitSwitch-active');
             currentUnit = selectedUnit;

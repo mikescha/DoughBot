@@ -1,9 +1,26 @@
-const inchToCm = value => value * 2.54;
-const cmToInch = value => value / 2.54;
-
+CURRENT_VERSION = "0.9.2";
 METRIC = "metric"
 STANDARD = "standard"
 defaultUnit = METRIC;
+
+const inchToCm = value => value * 2.54;
+const cmToInch = value => value / 2.54;
+
+// for making the recipes look pretty
+function capitalize(s) {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+};
+
+function addS(number) {
+    if (number == 1) {
+        return " ";
+    }
+    else {
+        return "s ";
+    };
+};
+
 
 function updateDisplayedUnits() {
     var targetUnit = "";
