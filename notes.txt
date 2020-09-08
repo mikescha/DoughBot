@@ -3,6 +3,8 @@ p1
 -- Add appropriate instructions for each recipe
 -- Add buttons to let the user increase/decrease the numeric amounts instead of doing text input?
    OR, change the integer input fields into choices?
+-- Make units "prettier", e.g. don't do fractional grams for large numbers, convert small numbers into Tsp/Tbsp, etc.
+-- Add volume approximations
 
 p2
 -- Allow the user to choose the amount of pizza by calories per ball

@@ -1,3 +1,5 @@
+CURRENT_VERSION = "0.9.1";
+
 $(function () {
     /* 
      * 
@@ -153,30 +155,37 @@ function updatePizzaSize() {
     sizeList.value = selected;
 };
 
-current_version = "0.9.0";
 
 //called on page load
 function checkCookies() {
     console.log("Checking cookies...");
-    if ((Cookies.get("pizza") != undefined) && (Cookies.get("version") == current_version)) {
+    if ((Cookies.get("pizza") != undefined) && (Cookies.get("version") == CURRENT_VERSION)) {
+        //if cookies exist and are for the current version of the app then load them
         console.log("Updating cookies");
         loadPizzaState();
-    }
+    } else if ((Cookies.get("pizza") != undefined) && (Cookies.get("version") != CURRENT_VERSION)) {
+        //if cookies exist but are NOT for the current version, then expire them
+        Cookies.expire("pizza");
+        Cookies.expire("dough_balls");
+        Cookies.expire("size");
+        Cookies.expire("version");
+    };
 };
 
+// Save current status of pizza fields to cookies
 function savePizzaState() {
     console.log("Saving pizza state");
-    Cookies.set("version", current_version);
-    Cookies.set("pizza", document.getElementById('id_pizza_style').value);
-    Cookies.set("dough_balls", document.getElementById('id_dough_balls').value);
-    Cookies.set("size", document.getElementById('id_size').value);
-    Cookies.set("pizza-units", Cookies.get("site-units"));
+    Cookies.set("version", CURRENT_VERSION, { expires: 365, path: '/' });
+    Cookies.set("pizza", document.getElementById('id_pizza_style').value, { expires: 365, path: '/' });
+    Cookies.set("dough_balls", document.getElementById('id_dough_balls').value, { expires: 365, path: '/' });
+    Cookies.set("size", document.getElementById('id_size').value, { expires: 365, path: '/' });
 };
 
+// Get current status of pizza fields from cookies
 function loadPizzaState() {
     console.log("Loading pizza state");
 
-    if (Cookies.get("version") == current_version) {
+    if (Cookies.get("version") == CURRENT_VERSION) {
         //TODO: Do some kind of sanity checking on the cookies, and if they are bad then delete all and start from scratch
         document.getElementById('id_pizza_style').value = Cookies.get("pizza");
         document.getElementById('id_dough_balls').value = Cookies.get("dough_balls");
