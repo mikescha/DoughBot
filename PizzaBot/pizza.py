@@ -1,33 +1,51 @@
 """description of the pizza class"""
 import math
 
-flour = "flour"
-water = "water"
+flour = "flour, preferably bread or 00"
+ap_flour = "all-purpose flour"
+semolina = "semolina flour"
+water = "luke-warm water"
 yeast = "yeast"
 salt = "salt"
 sugar = "sugar"
-oil = "olive oil"
+oil = "extra virgin olive oil"
 calories = "calories"
 servings = "servings"
 
 calories_per_unit = {
-    flour : 3.64,
+    flour : 3.64, #TODO This is a placeholder, look up real value
+    ap_flour: 3.64, #TODO This is a placeholder, look up real value
+    semolina: 5, #TODO This is a placeholder, look up real value
     sugar : 3.865,
     oil   : 8.048
     }
 
-dry_ingredients = (flour, yeast, salt, sugar)
+dry_ingredients = (flour, yeast, salt, sugar, semolina, ap_flour)
 wet_ingredients = (water, oil)
 
 #All numbers below are metric, in grams for dry ingredients and ml for wet.
 #Each recipe is for a 12"/30cm pizza
-neo_pizza_recipe = {
+nea_pizza_recipe = {
     flour    : 160.0,
     water    : 106.0,
     yeast    : 3.0,
     salt     : 3.0, 
     sugar    : 0.0,
     oil      : 0.0}
+
+nea_pizza_directions = """
+<li>If using active dry yeast, combine it with the lukewarm water and let stand for five minute before adding it to the dough; instant yeast can be added directly into the flour. </li>
+<li>Add all ingredients to a large bowl or the bowl of your stand mixer, and mix until thoroughly combined. Let rest for about 5 minutes.</li>
+<li>If kneading by hand, turn out onto a lightly floured work surface and knead until the dough is soft and supple, at least 10-15 minutes. If using a stand mixer, use the dough hook and knead until the dough is soft and supple, at least 3-4 minutes.</li>
+<li>Divide the dough into equal size balls and lightly oil the surface of each ball. Place into individual plastic bags or place multiple balls into a plastic box with a lid, and then seal the container. Let rest in the refrigerator at least 6 hours, or up to three days.</li>
+<li>About two hours before cooking, remove as many balls as you need from the refrigerator and allow to warm at room temperature.</li>
+<li>Shape, top, and bake as you prefer!</li>
+"""
+
+nea_pizza_references = """
+<li><a href="https://www.fornobravo.com/pizzaquest/recipe-neapolitan-pizza-dough/">Peter Reinhart's Neapolitan Pizza Dough</a><br></li>
+<li><a href="https://www.seriouseats.com/recipes/2012/07/basic-neapolitan-pizza-dough-recipe.html">Serious Eat's Neapolitan Pizza Dough</a><br></li>
+"""
 
 ny_pizza_recipe = {
     flour    : 157.5,
@@ -37,13 +55,37 @@ ny_pizza_recipe = {
     sugar    : 4.0,
     oil      : 8.0}
 
+ny_pizza_directions = """
+<li>If using active dry yeast, combine it with the lukewarm water and let stand for five minute before adding it to the dough; instant yeast can be added directly into the flour. </li>
+<li>Add all ingredients to a large bowl or the bowl of your stand mixer, and mix until thoroughly combined. Let rest for about 5 minutes.</li>
+<li>If kneading by hand, turn out onto a lightly floured work surface and knead until the dough is soft and supple, at least 10-15 minutes. If using a stand mixer, use the dough hook and knead until the dough is soft and supple, at least 3-4 minutes.</li>
+<li>Divide the dough into equal size balls and lightly oil the surface of each ball. Place into individual plastic bags or place multiple balls into a plastic box with a lid, and then seal the container. Let rest in the refrigerator at least 6 hours, or up to three days.</li>
+<li>About two hours before cooking, remove as many balls as you need from the refrigerator and allow to warm at room temperature.</li>
+<li>Shape, top, and bake as you prefer!</li>
+"""
+
+ny_pizza_references = """
+<li><a href="https://www.fornobravo.com/pizzaquest/ny-style-pizza-dough/">Peter Reinhart's NY Style Recipe</a></li>
+"""
+
 dd_pizza_recipe = {
-    flour    : 250.0,
+    ap_flour : 250.0,
+    semolina : 25.0,
     water    : 173.5,
     yeast    : 2.5,
     salt     : 5.0, 
     sugar    : 0.0,
     oil      : 15.0}
+
+dd_pizza_directions = """
+<li>Deep dish pizza recipe step 1</li>
+<li>Deep dish pizza recipe step 2</li>
+<li>Deep dish pizza recipe step 3</li>
+"""
+
+dd_pizza_references = """
+<li><a href="https://www.foodnetwork.com/recipes/chicago-style-deep-dish-pizzas-3645832">Food Network's Chicago-style Deep Dish Pizza</a></li>
+"""
 
 NEAPOLITAN = "NE"
 NEWYORK = "NY"
@@ -72,15 +114,27 @@ pizza_sizes = {
     }
 
 pizza_descriptions = [ #note this is an array because that's what the drop-down list wants
-        (NEAPOLITAN, "Neapolitan thin crust"),
-        (NEWYORK, "New York thin crust"),
-        (DEEPDISH, "Chicago-style deep dish"),
+        (NEAPOLITAN, "Neapolitan Thin Crust"),
+        (NEWYORK, "New York Thin Crust"),
+        (DEEPDISH, "Chicago-style Deep Dish"),
     ]
 
 pizza_recipes = {
-        NEAPOLITAN : neo_pizza_recipe,
+        NEAPOLITAN : nea_pizza_recipe,
         NEWYORK : ny_pizza_recipe,
         DEEPDISH : dd_pizza_recipe,
+    }
+
+pizza_directions = {
+        NEAPOLITAN : nea_pizza_directions,
+        NEWYORK : ny_pizza_directions,
+        DEEPDISH : dd_pizza_directions,
+    }
+
+pizza_references = {
+        NEAPOLITAN : nea_pizza_references,
+        NEWYORK : ny_pizza_references,
+        DEEPDISH : dd_pizza_references,
     }
 
 def scale_circle(d1, d2):
@@ -104,6 +158,8 @@ class Pizza(object):
         self.size = pizza_sizes[size]
         self.metric_ingredients = {}
         self.imp_ingredients = {}
+        self.directions = pizza_directions[pizza_style]
+        self.references = pizza_references[pizza_style]
 
         for p in pizza_descriptions:
             if p[0] == pizza_style:

@@ -85,6 +85,12 @@ $(function () {
         const metric_ingredients = pizza["metric_ingredients"];
         const imp_ingredients = pizza["imp_ingredients"];
 
+        var directions = document.getElementById("recipe_directions");
+        directions.innerHTML = pizza["directions"];
+
+        var references = document.getElementById("recipe_references");
+        references.innerHTML = pizza["references"];
+
         var table = document.getElementById("recipe_table");
 
         //Delete the old rows

@@ -64,7 +64,7 @@ p [data-metric] {
     }
 
 
-/* only needed if we want the navbar fixed
+/* only needed if we want the navbar fixed position
 body {
     padding-top: 70px;
 }
