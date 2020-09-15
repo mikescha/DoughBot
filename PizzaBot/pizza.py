@@ -6,16 +6,16 @@ ap_flour = "all-purpose flour"
 semolina = "semolina flour"
 water = "luke-warm water"
 yeast = "yeast"
-salt = "salt"
+salt = "kosher salt"
 sugar = "sugar"
 oil = "extra virgin olive oil"
 calories = "calories"
 servings = "servings"
 
-calories_per_unit = {
+calories_per_gram = {
     flour : 3.64, #TODO This is a placeholder, look up real value
     ap_flour: 3.64, #TODO This is a placeholder, look up real value
-    semolina: 5, #TODO This is a placeholder, look up real value
+    semolina: 3.6, #TODO This is a placeholder, look up real value
     sugar : 3.865,
     oil   : 8.048
     }
@@ -44,7 +44,7 @@ nea_pizza_directions = """
 
 nea_pizza_references = """
 <li><a href="https://www.fornobravo.com/pizzaquest/recipe-neapolitan-pizza-dough/">Peter Reinhart's Neapolitan Pizza Dough</a><br></li>
-<li><a href="https://www.seriouseats.com/recipes/2012/07/basic-neapolitan-pizza-dough-recipe.html">Serious Eat's Neapolitan Pizza Dough</a><br></li>
+<li><a href="https://www.seriouseats.com/recipes/2012/07/basic-neapolitan-pizza-dough-recipe.html">Serious Eats' Neapolitan Pizza Dough</a><br></li>
 """
 
 ny_pizza_recipe = {
@@ -73,18 +73,21 @@ dd_pizza_recipe = {
     semolina : 25.0,
     water    : 173.5,
     yeast    : 2.5,
-    salt     : 5.0, 
+    salt     : 10.0, 
     sugar    : 0.0,
     oil      : 15.0}
 
 dd_pizza_directions = """
-<li>Deep dish pizza recipe step 1</li>
-<li>Deep dish pizza recipe step 2</li>
-<li>Deep dish pizza recipe step 3</li>
+<li>In a large bowl, combine the water, yeast, and sugar and stir to combine. Let sit until the mixture is foamy, about 5 minutes.</li>
+<li>Add about half the flour and all the semolina, oil, and salt, mixing by hand until it is all incorporated and the mixture is smooth. Continue adding the flour, 1/4 cup/100g at a time, working the dough after each addition, until all the flour is incorporated but the dough is still slightly sticky.</li>
+<li>Turn the dough out onto a lightly floured surface and knead until smooth but still slightly tacky, 3 to 5 minutes.</li>
+<li>Oil a large mixing bowl, place the dough in the bowl, and turn to oil all sides. Cover the bowl with plastic wrap and let sit in a warm place until doubled, about 1-1.5 hours.</li>
+<li>When ready to bake, press the dough into your pan so that it spreads across the entire bottom of the pan and also up the sides by about 1.5"/4cm. Top as desired, and then bake at 475F/250c for 30 minutes.</li>
 """
 
 dd_pizza_references = """
 <li><a href="https://www.foodnetwork.com/recipes/chicago-style-deep-dish-pizzas-3645832">Food Network's Chicago-style Deep Dish Pizza</a></li>
+<li><a href="https://www.foodnetwork.com/recipes/jeff-mauro/true-chicago-style-deep-dish-pizza-5612273">Jeff Mauro's True Chicago-Style Deep-Dish Pizza</a></li>
 """
 
 NEAPOLITAN = "NE"
@@ -184,8 +187,8 @@ class Pizza(object):
                     
                 self.calories = 0                    
                 for ingredient in self.metric_ingredients:
-                    if ingredient in calories_per_unit:
-                        self.calories += calories_per_unit[ingredient] * self.metric_ingredients[ingredient] / ball_count
+                    if ingredient in calories_per_gram:
+                        self.calories += calories_per_gram[ingredient] * self.metric_ingredients[ingredient] / ball_count
 
                 #calories_per_serving is what I think a reasonable amount of dough is for a single person
                 self.servings = self.calories / self.calories_per_serving

@@ -200,13 +200,14 @@ function loadPizzaState() {
 
 // Take any number representing a dry ingredient, scale the number to 
 // the right level of units, and then return that string
-function scaleDryIngredient(metric, imp) {
+function scaleDryIngredient(metric, imp, ingredient) {
     const uKilo = "kg";
     const uGram = "g";
     const uPound = "lb";
     const uOunce = "oz";
-    const uTbsp = "tablespoon";
-    const uTsp = "teaspoon";
+    const uCup = "cup";
+    const uTbsp = "tbsp";
+    const uTsp = "tsp";
 
     //Get the amount of ingredient from the string, and round to the nearest 0.1 
     var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10
@@ -225,12 +226,90 @@ function scaleDryIngredient(metric, imp) {
         result += imp_amt + " " + uOunce
     }
 
+    var oz_per_cup = 8;
+    if (ingredient.includes("yeast")) {
+        oz_per_cup = 4.8;
+    } else if (ingredient.includes("salt")) {
+        oz_per_cup = 8.76;
+    } else if (ingredient.includes("sugar")) {
+        oz_per_cup = 7.5;
+    } else if (ingredient.includes("semolina")) {
+        oz_per_cup = 5.89;
+    } else if (ingredient.includes("flour")) {
+        oz_per_cup = 4.25;
+    } else {
+        console.log("Error! Ingredient not found");
+    }
+
+    const tbsp_per_cup = 16;
+    const tsp_per_cup = tbsp_per_cup * 3;
+    var fraction_str = "";
+
+    var left = imp_amt;
+    var fraction_str = "";
+    const imp_cups = Math.trunc(imp_amt / oz_per_cup);
+    if (imp_cups >= 1) {
+        left -= imp_cups * oz_per_cup;
+    }
+
+    var remainder = left / oz_per_cup;
+    if (remainder >= 0.75) {
+        fraction_str = "3/4";
+        left -= imp_cups * 0.75;
+    } else if (remainder >= 0.66) {
+        fraction_str = "2/3";
+        left -= imp_cups * 0.66;
+    } else if (remainder >= 0.5) {
+        fraction_str = "1/2";
+        left -= imp_cups * 0.5;
+    } else if (remainder >= 0.33) {
+        fraction_str = "1/3";
+        left -= imp_cups * 0.33;
+    } else if (remainder >= 0.25) {
+        fraction_str = "1/4";
+        left -= imp_cups * 0.25;
+    }
+
+    result += " (" + (imp_cups >= 1 ? imp_cups + " " : "");
+    result += (fraction_str != "" ? fraction_str + " " : "");
+    result += (fraction_str != "" || imp_cups >= 1 ? "cup" + ((imp_cups > 1) ? "s" : "") : "");
+
+    const tsp = Math.trunc(left / oz_per_cup);
+
+    //Add tsp amounts only if the original amount is small
+    fraction_str = "";
+    if (imp_amt < oz_per_cup / 4) {
+        remainder = left - (tsp * oz_per_cup);
+        if (remainder >= 0.75) {
+            fraction_str = "3/4";
+        } else if (remainder >= 0.66) {
+            fraction_str = "2/3";
+        } else if (remainder >= 0.5) {
+            fraction_str = "1/2";
+        } else if (remainder >= 0.33) {
+            fraction_str = "1/3";
+        } else if (remainder >= 0.25) {
+            fraction_str = "1/4";
+        } else if (remainder >= 0.125) {
+            fraction_str = "1/8";
+        }
+    }
+
+    result += (tsp >= 1 ? " " + tsp : "");
+    result += (fraction_str != "" ? fraction_str + " " : "");
+    result += (tsp >= 1 || fraction_str != "" ? " " + uTsp : "");
+    result += ")";
     result += "\" data-metric=\"";
 
     //add metric units 
     if (metric_amt >= 1000) {
+        //if it's a really big number, convert to kg with 1 decimal place (e.g. 1.5kg)
         result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uKilo;
+    } else if (metric_amt >= 10) {
+        //medium-sized number, just round off
+        result += Math.round(metric_amt) + " " + uGram;
     } else {
+        //leave small numbers with a decimal point
         result += metric_amt + " " + uGram;
     }
     result += "\"></span>";
@@ -261,7 +340,7 @@ function scaleWetIngredient(metric, imp) {
 
     if (imp_amt >= units["cup"]) { //if more than a cup, do like 1.5 cups
         var cups = Math.round(((imp_amt / units["cup"]) + Number.EPSILON) * 10) / 10;
-        result += cups + " " + uCup + ((cups > 1) ? "s" : "");
+        result += cups + " " + uCup + addS(cups); 
     } else {  //less than 1 cup, so just do ounces for now
         result += imp_amt + " " + uOunce;
     };
@@ -282,19 +361,19 @@ function scaleWetIngredient(metric, imp) {
 function addIngredientCell(row, ingredient) {
     cell = row.insertCell(0);
     cell.innerHTML = capitalize(ingredient);
-    cell.classList.add("ingredient-cell")
-    cell.classList.add("w-75")
+    cell.classList.add("ingredient-cell");
+    cell.classList.add("w-60");
 };
 
 function addAmountCell(row, ingredient, metricAmt, impAmt) {
     cell = row.insertCell(0);
-    cell.classList.add("amount-cell")
-    cell.classList.add("w-25")
+    cell.classList.add("amount-cell");
+    cell.classList.add("w-40");
     //Assume that all liquid ingredients are ml, everything else is in g for now
-    if (ingredient == "water" || ingredient == "olive oil") {
-        cell.innerHTML = scaleWetIngredient(metricAmt, impAmt)
+    if (ingredient.includes("water") || ingredient.includes("oil")) {
+        cell.innerHTML = scaleWetIngredient(metricAmt, impAmt);
     } else {
-        cell.innerHTML = scaleDryIngredient(metricAmt, impAmt);
+        cell.innerHTML = scaleDryIngredient(metricAmt, impAmt, ingredient);
     }
 };
 

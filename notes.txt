@@ -10,11 +10,17 @@ PythonAnywhere deployment
 
 Feature ideas:
 p1
--- Add appropriate instructions for each recipe
+-- BUG: The numbers I calculate don't match the recipes that I'm working from. e.g. NY Pizza
+    says 3 x 12" pizzas is 22.5oz flour, but I say 17 oz.
+-- Check that the cup/tsp approximations make sense vs. the original recipes
+-- Add volume approximations for Imperial numbers
+    ** Clean up code for dry measures, e.g. move into functions where possible
+    ** Add code for tbsp/tsp to weight measures
+
 -- Add buttons to let the user increase/decrease the numeric amounts instead of doing text input?
    OR, change the integer input fields into choices?
--- Make units "prettier", e.g. don't do fractional grams for large numbers, convert small numbers into Tsp/Tbsp, etc.
--- Add volume approximations for Imperial numbers
+-- Add ability to buy stuff from Amazon
+-- Add tip jar
 
 p2
 -- Allow the user to choose the amount of pizza by calories per ball
