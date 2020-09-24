@@ -13,11 +13,11 @@ calories = "calories"
 servings = "servings"
 
 calories_per_gram = {
-    flour : 3.64, #TODO This is a placeholder, look up real value
-    ap_flour: 3.64, #TODO This is a placeholder, look up real value
-    semolina: 3.6, #TODO This is a placeholder, look up real value
-    sugar : 3.865,
-    oil   : 8.048
+    flour : 3.64, 
+    ap_flour: 3.64, 
+    semolina: 3.6,
+    sugar : 3.87,
+    oil   : 8.1
     }
 
 dry_ingredients = (flour, yeast, salt, sugar, semolina, ap_flour)
@@ -48,12 +48,12 @@ nea_pizza_references = """
 """
 
 ny_pizza_recipe = {
-    flour    : 157.5,
-    water    : 105.0,
-    yeast    : 2.5,
-    salt     : 2.5, 
-    sugar    : 4.0,
-    oil      : 8.0}
+    flour    : 212.6,
+    water    : 138.0,
+    yeast    : 1.7,
+    salt     : 4.73, 
+    sugar    : 9.45,
+    oil      : 14.7}
 
 ny_pizza_directions = """
 <li>If using active dry yeast, combine it with the lukewarm water and let stand for five minute before adding it to the dough; instant yeast can be added directly into the flour. </li>
