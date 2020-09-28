@@ -2,7 +2,6 @@ PythonAnywhere deployment
 -- Update version number to something higher than last deployment, so that the cookies get wiped
 -- In a Bash shell in PA, do a Git pull (do a reset if necessary to remove prior local changes)
 -- In Settings,
----- Change AllowedHosts to ["schack.pythonanywhere.com"] (or figure out how to add this to the code so it works for both local and remote testing)
 ---- Change STATICROOT = "/DoughBot/home/schack/DoughBot/static" (or figure out how to calculate this directly)
 -- From the directory where the manage.py file lives, do:  python3.7 manage.py collectstatic
 -- Go to the web tab: https://www.pythonanywhere.com/user/schack/webapps/#tab_id_schack_pythonanywhere_com  and then reload the app

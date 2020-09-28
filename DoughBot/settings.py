@@ -25,7 +25,7 @@ SECRET_KEY = '0d912b19-8ac9-42d3-8ec0-2ffd91fd267b'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["schack.pythonanywhere.com","localhost"]
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS

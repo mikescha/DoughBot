@@ -1,4 +1,4 @@
-CURRENT_VERSION = "0.9.2";
+CURRENT_VERSION = "2020.09.28";
 METRIC = "metric"
 STANDARD = "standard"
 defaultUnit = METRIC;
