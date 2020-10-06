@@ -18,6 +18,8 @@ class PizzaForm(forms.Form):
     dough_balls = forms.IntegerField(
         label = "Number of Dough Balls",
         initial = Pizza.inital_doughballs,
+        min_value = 1, 
+        max_value = 100,
         )
 
     size = forms.ChoiceField(

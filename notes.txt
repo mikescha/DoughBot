@@ -1,23 +1,48 @@
 PythonAnywhere deployment
--- Update version number to something higher than last deployment, so that the cookies get wiped
+-- Get the latest code live
+---- Update version number to something higher than last deployment, so that the cookies get wiped
+---- Push everything to the cloud
+
 -- In a Bash shell in PA, do a Git pull (do a reset if necessary to remove prior local changes)
+---- git reset --hard
+---- git pull
+
 -- In Settings,
----- Change STATICROOT = "/DoughBot/home/schack/DoughBot/static" (or figure out how to calculate this directly)
--- From the directory where the manage.py file lives, do:  python3.7 manage.py collectstatic
+---- Change STATICROOT = "/home/schack/DoughBot/home/schack/DoughBot/static" (or figure out how to calculate this directly)
+
+-- From the directory where the manage.py file lives, do:  
+----workon schack.pythonanywhere.com
+----python3.7 manage.py collectstatic
+
 -- Go to the web tab: https://www.pythonanywhere.com/user/schack/webapps/#tab_id_schack_pythonanywhere_com  and then reload the app
 
+Helpful links:
+https://help.pythonanywhere.com/pages/DjangoStaticFiles
+https://help.pythonanywhere.com/pages/DebuggingStaticFiles/
+https://help.pythonanywhere.com/pages/Virtualenvs/
+-- To be installed:
+---- pip install django=3.1.1
+---- pip install django-widget-tweaks
 
-Feature ideas:
+To do: 
 p1
 -- Add volume approximations for Imperial numbers
-    ** Clean up code for dry measures, e.g. move into functions where possible
-    ** Add similar code for wet measures
+    ** Because of rounding, some numbers look weird. e.g. 
+        5 10" Neapolitan pizzas: 12 oz (1 1/2 cup + 2 1/3 tsp) Luke-warm water  //If it's 12 oz, should be EXACTLY 1.5 cup)
+        5 16" Deep dish: 52 oz (6 1/2 cups + 1/2 tsp) Luke-warm water // 1/2tsp is unnecessary after 6.5 cups
+        10 16" Deep dish: 16 oz (2 1/2 cups + 2 tbsp)	Semolina flour  //16 oz should be 1lb
+        8 25cm Neapolitan: 588.9 ml	Luke-warm water  //should round
 
--- Check that the cup/tsp approximations make sense vs. the original recipes
-
+-- Change the recipes and instructions to exactly match the originals, then change the name to provide credit
+-- Confirm then that the scaling works for the recipes, so when you make as much as in the original recipe the amounts are correct
 -- Add recipes, e.g. for sicilian pizza and maybe sheet pan pizza
 
--- Modify recipe names to refer to sources ("Serious Eat's Neapolitan Pizza"), so I can copy the instructions directly
+-- Bugs:
+    ** Column widths look bad in metric because it's giving too much space to the ingredients
+    ** Can non-breaking spaces be put in instead of regular spaces in places where linebreaks shouldn't happen (e.g. don't want:
+        145
+        g
+       )
 
 -- Add buttons to let the user increase/decrease the numeric amounts instead of doing text input?
    OR, change the integer input fields into choices?
@@ -31,6 +56,7 @@ p2
 
 Code cleanup:
 -- Move more standard functions into the header.js so they don't need to be rewritten for bread
+
 
 
 

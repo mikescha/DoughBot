@@ -14,10 +14,10 @@ function capitalize(s) {
 
 function addS(number) {
     if (number == 1) {
-        return " ";
+        return "";
     }
     else {
-        return "s ";
+        return "s";
     };
 };
 

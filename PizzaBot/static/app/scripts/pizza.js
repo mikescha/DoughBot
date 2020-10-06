@@ -126,6 +126,22 @@ $(function () {
     ajaxRecalcPizza();
 });
 
+const unit = {
+    "kg": "kg",
+    "g": "g",
+    "lb": "lb",
+    "liter": "L",
+    "ml": "ml",
+    "q": "quart",
+    "p": "pint",
+    "oz": "oz",
+    "cup": "cup",
+    "tbsp": "tbsp",
+    "tsp": "tsp",
+};
+const tbsp_per_cup = 16;
+const tsp_per_cup = tbsp_per_cup * 3;
+
 
 // Gets the pizza size and converts it to a different unit
 function updatePizzaSize() {
@@ -198,17 +214,66 @@ function loadPizzaState() {
     };
 };
 
-// Take any number representing a dry ingredient, scale the number to 
-// the right level of units, and then return that string
-function scaleDryIngredient(metric, imp, ingredient) {
-    const uKilo = "kg";
-    const uGram = "g";
-    const uPound = "lb";
-    const uOunce = "oz";
-    const uCup = "cup";
-    const uTbsp = "tbsp";
-    const uTsp = "tsp";
+//conversion table so that we can get cups/tbsp/tsp in addition to lb/oz
+function getOzPerCupForIngredient(ingredient) {
+    var oz_per_cup = 8;
+    if (ingredient.includes("yeast")) {
+        oz_per_cup = 4.8;
+    } else if (ingredient.includes("salt")) {
+        oz_per_cup = 4.7; // For Diamond Crystal kosher salt
+    } else if (ingredient.includes("sugar")) {
+        oz_per_cup = 7.5;
+    } else if (ingredient.includes("semolina")) {
+        oz_per_cup = 5.89;
+    } else if (ingredient.includes("flour")) {
+        oz_per_cup = 4.5;
+    } else {
+        console.log("Ingredient: " + ingredient + " using default 8oz/cup");
+    }
+    return oz_per_cup;
+};
 
+function numberToFraction(number) {
+    var result = "";
+    if (number >= 1 || number < 0) {
+        console.log("Error! Fractional value out of range!");
+    }
+
+    if (number >= 3/4) {
+        result = "3/4";
+    } else if (number >= 2/3) {
+        result = "2/3";
+    } else if (number >= 1/2) {
+        result = "1/2";
+    } else if (number >= 1/3) {
+        result = "1/3";
+    } else if (number >= 1/4) {
+        result = "1/4";
+    } 
+
+    return result;
+};
+
+function truncToFraction(number) {
+    var result = 0.0;
+
+    if (number >= 3/4) {
+        result = 0.75;
+    } else if (number >= 2/3) {
+        result = 0.66;
+    } else if (number >= 1/2) {
+        result = 0.5;
+    } else if (number >= 1/3) {
+        result = 0.33;
+    } else if (number >= 1/4) {
+        result = 0.25;
+    }
+
+    return result;
+}
+
+function scaleIngredient(metric, imp, ingredient) {
+    var dry_ingredient = !(ingredient.includes("water") || ingredient.includes("olive oil"));
     //Get the amount of ingredient from the string, and round to the nearest 0.1 
     var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10;
     var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10;
@@ -219,166 +284,102 @@ function scaleDryIngredient(metric, imp, ingredient) {
         imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 100) / 100;
     }
 
+    var left = imp_amt;
+    const oz_per_cup = getOzPerCupForIngredient(ingredient);
+    const cups = Math.trunc(imp_amt / oz_per_cup);
+    left -= cups * oz_per_cup;
+
+    //fractional cups
+    var remainder = left / oz_per_cup;
+    const cup_fraction = numberToFraction(remainder);
+    left -= oz_per_cup * truncToFraction(remainder);
+
+    var tbsp = 0;
+    var tsp = 0;
+    var spoon_fraction = ""; 
+    if (dry_ingredient) {
+        // Calculate the number of tbsp, and then subtract that amount from left, only if there is a
+        // significant amount of the original amount left (don't want 16 cups + 1 tbsp)
+        tbsp = (left / imp >= 0.02 ? Math.trunc((left / oz_per_cup) * tbsp_per_cup) : 0);
+        left -= (tbsp / tbsp_per_cup) * oz_per_cup;
+
+        // Do the same for tsp
+        tsp = (left / imp >= 0.02 ? Math.trunc((left / oz_per_cup) * tsp_per_cup) : 0);
+        left -= (tsp / tsp_per_cup) * oz_per_cup;
+
+        var spoon_fraction = "";
+        //Add tsp amounts only if the original amount is small
+        if (cups == 0 && cup_fraction == "") {
+            spoon_fraction = numberToFraction(left);
+        }
+
+    } else { //WET_INGREDIENT
+        //now handle tbsp/tsp
+        tbsp = Math.trunc(left * 2);  //2 tbsp per fl oz
+        left -= tbsp / 2;
+
+        tsp = Math.trunc(left * 6);  //6 tsp per fl oz
+        left -= tsp / 6;
+
+        spoon_fraction = numberToFraction(left * 6);
+        left -= truncToFraction(left * 6);
+    };
+
     var result = "<span data-standard=\"";
-    //if more than 1 lb convert to lb + oz
-    if (imp_amt >= 16) {
+    //Add lb & oz (dry) or just oz (wet)
+    if (dry_ingredient && imp_amt >= 16) {
         const imp_amt_lb = Math.trunc(imp_amt / 16);
         const imp_amt_oz = Math.round(((imp_amt / 16) - imp_amt_lb) * 16);
-        result += imp_amt_lb + " " + uPound;
+        result += imp_amt_lb + " " + unit["lb"];
         if (imp_amt_oz > 0) {
-            result += " " + imp_amt_oz + " " + uOunce;
+            result += " " + imp_amt_oz + " " + unit["oz"];
         }
     } else {
-        result += imp_amt + " " + uOunce;
-    }
+        //Wet ingredients or < 1lb of dry ingredients only get oz
+        //Round for anything bigger than 10
+        result += (imp_amt >= 10 ? Math.round(imp_amt) : imp_amt);
+        result += " " + unit["oz"];
+    };
 
-    //conversion table so that we can get cups/tbsp/tsp in addition to lb/oz
-    var oz_per_cup = 8;
-    if (ingredient.includes("yeast")) {
-        oz_per_cup = 4.8;
-    } else if (ingredient.includes("salt")) {
-        oz_per_cup = 10.3;
-    } else if (ingredient.includes("sugar")) {
-        oz_per_cup = 7.5;
-    } else if (ingredient.includes("semolina")) {
-        oz_per_cup = 5.89;
-    } else if (ingredient.includes("flour")) {
-        oz_per_cup = 4.5;
-    } else {
-        console.log("Error! Ingredient not found");
-    }
-
-    const tbsp_per_cup = 16;
-    const tsp_per_cup = tbsp_per_cup * 3;
-
-    //"left" will start out as the full amount, and be reduced as we take out whole measures like cups.
-    //If you have 9 oz, then we take out 1 cup in the first step and add that to the result
-    //string, leaving 1 oz. Then we convert that to tbsp and tsp using the conversion chart above.
-    var left = imp_amt;
-    var cup_fraction = "";
-    const imp_cups = Math.trunc(imp_amt / oz_per_cup);
-    if (imp_cups >= 1) {
-        left -= imp_cups * oz_per_cup;
-    }
-
-    var remainder = left / oz_per_cup;
-    if (remainder >= 0.75) {
-        cup_fraction = "3/4";
-        left -= oz_per_cup * 0.75;
-    } else if (remainder >= 0.66) {
-        cup_fraction = "2/3";
-        left -= oz_per_cup * 0.66;
-    } else if (remainder >= 0.5) {
-        cup_fraction = "1/2";
-        left -= oz_per_cup * 0.5;
-    } else if (remainder >= 0.33) {
-        cup_fraction = "1/3";
-        left -= oz_per_cup * 0.33;
-    } else if (remainder >= 0.25) {
-        cup_fraction = "1/4";
-        left -= oz_per_cup * 0.25;
-    }
-
-    result += " (" + (imp_cups >= 1 ? imp_cups + " " : "");
-    result += (cup_fraction != "" ? cup_fraction + " " : "");
-    result += (cup_fraction != "" || imp_cups >= 1 ? uCup + ((imp_cups > 1) ? "s" : "") : "");
-
-    // Calculate the number of tbsp, and then subtract that amount from left
-    const tbsp = Math.trunc((left / oz_per_cup) * tbsp_per_cup);
-    left -= (tbsp / tbsp_per_cup) * oz_per_cup;
-
-    // Do the same for tsp
-    const tsp = Math.trunc((left / oz_per_cup) * tsp_per_cup);
-    left -= (tsp / tsp_per_cup) * oz_per_cup;
-
-    var spoon_fraction = "";
-    //Add tsp amounts only if the original amount is small
-    if (imp_cups == 0 && cup_fraction == "") {
-        if (left >= 0.75) {
-            spoon_fraction = "3/4";
-        } else if (left >= 0.66) {
-            spoon_fraction = "2/3";
-        } else if (left >= 0.5) {
-            spoon_fraction = "1/2";
-        } else if (left >= 0.33) {
-            spoon_fraction = "1/3";
-        } else if (left >= 0.25) {
-            spoon_fraction = "1/4";
-        } else if (left >= 0.125) {
-            spoon_fraction = "1/8";
-        } else if (tbsp == 0 && tsp == 0) {
-            //For very tiny amounts, we don't want them to round to zero for small recipes so default to 1/16 tsp
-            //But, if we had TBSP or TSP then don't bother with such a tiny fraction 
-            spoon_fraction = "1/16";
-        }
-    }
-
-    //if we had cups need to add a space for formatting
-    result += (imp_cups > 0 || cup_fraction != "" ? " " : ""); 
-    result += (tbsp >= 1 ? tbsp + " " + uTbsp : "");
-    //if we had tbsp and we're going to add tsp or fract_sp then add a space
-    result += (tbsp >= 1 && (tsp >= 1 || spoon_fraction != "") ? " " : ""); 
+    result += " (";
+    result += (cups >= 1 ? cups : ""); 
+    result += (cups >= 1 && cup_fraction != "" ? " " : "");
+    result += (cup_fraction != "" ? cup_fraction : "");
+    result += (cup_fraction != "" || cups >= 1 ? " " + unit["cup"]: "");
+    result += (cups >= 1 ? addS(cups) : ""); 
+    result += (tbsp >= 1 && (cups > 0 || cup_fraction != "") ? " + " : "");
+    result += (tbsp >= 1 ? tbsp + " " + unit["tbsp"] : "");
+    result += ((tsp >= 1 || spoon_fraction != "") && (tbsp != 0 || cups > 0 || cup_fraction != "") ? " + " : "");
     result += (tsp >= 1 ? tsp + " " : "");
     result += (spoon_fraction != "" ? spoon_fraction + " " : "");
-    result += (tsp >= 1 || spoon_fraction != "" ? uTsp  : "");
+    result += (tsp >= 1 || spoon_fraction != "" ? unit["tsp"] : "");
     result += ")";
-    result += "\" data-metric=\"";
-
-    //add metric units 
-    if (metric_amt >= 1000) {
-        //if it's a really big number, convert to kg with 1 decimal place (e.g. 1.5kg)
-        result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uKilo;
-    } else if (metric_amt >= 10) {
-        //medium-sized number, just round off
-        result += Math.round(metric_amt) + " " + uGram;
-    } else {
-        //leave small numbers with a decimal point
-        result += metric_amt + " " + uGram;
-    }
-    result += "\"></span>";
-
-    return result;
-};
-
-// Take any number representing a wet ingredient in liquid units (ml or oz), scale the number to 
-// the right level of units, and then return that string
-function scaleWetIngredient(metric, imp) {
-    const uLiter = "L";
-    const uMl = "ml";
-    const uQuart = "quart";
-    const uPint = "pint";
-    const uOunce = "oz";
-    const uCup = "cup";
-    const uTbsp = "tablespoon";
-    const uTsp = "teaspoon";
-
-    //table of imperial liquid units to ml
-    const units = { "cup": 8, "ounce": 1, "tbsp": 2 / 4, "tsp": 2 / 12 }; //quarter cup is 2 oz and has 4 T and 12 t
-
-    //Get the amount of ingredient from the string, and round to the nearest 0.1 
-    var metric_amt = Math.round((parseFloat(metric) + Number.EPSILON) * 10) / 10;
-    var imp_amt = Math.round((parseFloat(imp) + Number.EPSILON) * 10) / 10;
-
-    var result = "<span data-standard=\"";
-
-    if (imp_amt >= units["cup"]) { //if more than a cup, do like 1.5 cups
-        var cups = Math.round(((imp_amt / units["cup"]) + Number.EPSILON) * 10) / 10;
-        result += cups + " " + uCup + addS(cups); 
-    } else {  //less than 1 cup, so just do ounces for now
-        result += imp_amt + " " + uOunce;
-    };
 
     result += "\" data-metric=\"";
 
     //add metric amounts...I love the metric system
-    if (metric_amt >= 1000) {
-        result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + uLiter;
+    if (dry_ingredient) {
+        if (metric_amt >= 1000) {
+            //if it's a really big number, convert to kg with 1 decimal place (e.g. 1.5kg)
+            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + unit["kg"];
+        } else if (metric_amt >= 10) {
+            //medium-sized number, just round off
+            result += Math.round(metric_amt) + " " + unit["g"];
+        } else {
+            //leave small numbers with a decimal point
+            result += metric_amt + " " + unit["g"];
+        };
     } else {
-        result += metric_amt + " " + uMl;
+        if (metric_amt >= 1000) {
+            result += (Math.round(((metric_amt / 1000) + Number.EPSILON) * 10) / 10) + " " + unit["liter"];
+        } else {
+            result += metric_amt + " " + unit["ml"];
+        }
     }
     result += "\"></span>";
 
     return result;
+
 };
 
 function addIngredientCell(row, ingredient) {
@@ -392,12 +393,7 @@ function addAmountCell(row, ingredient, metricAmt, impAmt) {
     cell = row.insertCell(0);
     cell.classList.add("amount-cell");
     cell.classList.add("w-40");
-    //Assume that all liquid ingredients are ml, everything else is in g for now
-    if (ingredient.includes("water") || ingredient.includes("oil")) {
-        cell.innerHTML = scaleWetIngredient(metricAmt, impAmt);
-    } else {
-        cell.innerHTML = scaleDryIngredient(metricAmt, impAmt, ingredient);
-    }
+    cell.innerHTML = scaleIngredient(metricAmt, impAmt, ingredient);
 };
 
 function addHeadingCell(row, pizza) {
@@ -408,17 +404,17 @@ function addHeadingCell(row, pizza) {
 
     //Dough balls description
     msg += "<p class=\"text-secondary\"><small><i>Makes " + pizza["dough_balls"] + " ball";
-    msg += addS(pizza["dough_balls"]);
+    msg += addS(pizza["dough_balls"]) + " ";
     msg += "for " + (pizza["dough_balls"] == 1 ? "a " : " ") + "<span data-standard=\"";
     var stdSize = Math.round(cmToInch(pizza["size"]));
     var metSize = pizza["size"];
     msg += stdSize + " in\" data-metric=\"" + metSize + "cm\"></span> pizza";
-    msg += addS(pizza["dough_balls"]);
+    msg += addS(pizza["dough_balls"]) + " ";
     msg += "</br>";
 
     //Servings and calories information
     var servings = Math.round(pizza["servings"])
-    msg += "About " + servings + " serving" + addS(servings);
+    msg += "About " + servings + " serving" + addS(servings) + " ";
     msg += "per ball, with " + Math.round(pizza["calories"]/servings) + " calories per serving</i></small ></p>";
 
     cell.innerHTML = msg;
